@@ -58,7 +58,8 @@ import { SublevelMenuComponent } from './dashboard-layout/sidebar/sublevel-menu.
     MatToolbarModule,
     MatIconModule,
     MatButtonModule,
-    MatListModule
+    MatListModule,
+    MatCardModule
   ]
 })
 export class DashboardModule { }

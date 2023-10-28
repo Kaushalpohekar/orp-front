@@ -3,3 +3,12 @@
     padding-top: 5rem;
     margin-bottom: 2rem;
 }
+
+.title{
+    font-size: 1.5rem;
+    font-weight: 550;
+}
+
+.card{
+    height: 75vh;
+}
