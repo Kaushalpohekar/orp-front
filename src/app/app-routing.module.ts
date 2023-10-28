@@ -16,7 +16,7 @@ const routes: Routes = [
   {
     path: 'dashboard',
     component: DashboardLayoutComponent,
-    // canActivate: [AuthGuard, RoleGuard],
+    // canActivate: [AuthGuard],
     data: { roles: ['Admin'] },
     children: [
       { path: '', loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule) },

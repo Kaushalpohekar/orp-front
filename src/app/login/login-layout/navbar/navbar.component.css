@@ -1,0 +1,12 @@
+mat-toolbar-row{
+    justify-content:center;}
+  h2{
+  color: black;
+  }
+  mat-toolbar{
+    background-color:#e2e2e2;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    height: fit-content;
+  }

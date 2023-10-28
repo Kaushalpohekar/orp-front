@@ -1,19 +1,20 @@
 .footer {
+    margin-top: 5vh;
     position: fixed;
     bottom: 0;
-    height: 5vh;
-    width: 100%;
-    background-color:  #e6e6e6;
-    color: whitesmoke;
+    z-index: 1;
+    height:min-content;
+    width: 100%; 
+    background-color: #e2e2e2;
+    color: black;
     display: flex;
     justify-content: center;
-    z-index: 100;
 }
 
 .footer-title{
     text-align: center;
     color: black;
-    font-size: 1rem;
+    font-size: 1.2rem;
 }
 
 .footer-link{
@@ -21,5 +22,5 @@
 }
 
 .footer-link:hover{
-    color: black;
+    color: purple;
 }
