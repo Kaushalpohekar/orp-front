@@ -58,11 +58,12 @@
   }
   
   .right-side button{
-    background-color: whitesmoke;
+    background-color: black;
   }
   
   .right-button button:hover{
-    background: #263238;
+    background: #fff;
+    color: #000;
   }
   
   .logout-button button:hover{
