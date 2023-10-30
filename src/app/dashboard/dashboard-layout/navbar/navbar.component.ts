@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router,NavigationEnd  } from '@angular/router';
+import { AuthService } from 'src/app/login/auth/auth.service';
 
 @Component({
   selector: 'app-navbar',
@@ -8,27 +9,31 @@ import { Router,NavigationEnd  } from '@angular/router';
 })
 export class NavbarComponent implements OnInit{
 
+  
+
   currentPageName: string = '';
   isFullScreen = false;
   elem = document.documentElement;
   isFullscreen = false;
-  constructor(private router: Router) 
+  constructor(public authService:  AuthService,private router: Router) 
   {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
-        // Extract the page name from the route URL
         this.currentPageName = this.getPageNameFromRoute(this.router.url);
       }
     });
   }
 
+  logout(){
+    this.authService.logout();
+    window.location.reload();
+  }
 
   ngOnInit(): void {
+
   }
+
   private getPageNameFromRoute(url: string): string {
-    // You can implement your logic here to extract the page name
-    // For example, if your routes are structured like '/dashboard', '/products', etc.
-    // You can split the URL and take the last segment as the page name
     const segments = url.split('/');
     return segments[segments.length - 1];
   }

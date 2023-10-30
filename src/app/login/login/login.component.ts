@@ -24,6 +24,39 @@ export class LoginComponent {
     private snackBar:MatSnackBar
   ) {}
 
+  submit() {
+    if (this.email.valid && this.password.valid) {
+      this.loading = true;
+      this.loadingMessage = "Signing in...";
+
+      const loginData = {
+        userName: this.email.value,
+        password: this.password.value
+      };
+
+      this.authService.login(loginData).subscribe(
+        (response) => {
+          const token = response.token;
+          this.authService.setToken(token);
+          this.redirectUser();
+            this.snackBar.open('Login successful!', 'Dismiss', {
+              duration: 2000
+            });
+        },
+        (error) => {
+          this.snackBar.open(
+            error.error.message || 'Login failed. Please try again.',
+            'Dismiss',
+            { duration: 2000 }
+          );
+          this.errorMessage = error.error.message || '';
+          this.loading = false;
+          this.loadingMessage = "Sign In";
+        }
+      );
+    }
+  }
+
   getErrorMessage() {
     if (this.email.hasError('required')) {
       return 'Email is required';
@@ -42,11 +75,7 @@ export class LoginComponent {
   }
   
 
-  redirectUser(Designation: string) {
-    if (Designation === 'Intern' || Designation === 'Employee') {
-      this.router.navigate(['dashboard']);
-    } else if (Designation === 'Manager') {
-      this.router.navigate(['/sa']);
-    }
+  redirectUser() {
+    this.router.navigate(['dashboard']);
   }
 }

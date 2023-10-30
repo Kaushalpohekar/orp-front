@@ -1,14 +1,14 @@
 .content{
-    padding: 1rem;
-    padding-top: 5rem;
-    margin-bottom: 2rem;
+    padding-top: 8vh;
+    padding-bottom: 5vh;
 }
 
 .title{
+    padding-top: 0.5vh;
     font-size: 1.5rem;
     font-weight: 550;
 }
 
 .card{
-    height: 75vh;
+    height: 80vh;
 }
