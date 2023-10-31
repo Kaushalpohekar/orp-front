@@ -26,6 +26,8 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { ReactiveFormsModule } from '@angular/forms';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import { MatSortModule } from '@angular/material/sort';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
 
 import { DashboardRoutingModule } from './dashboard-routing.module';
 import { DashboardComponent } from './dashboard/dashboard.component';
@@ -59,7 +61,14 @@ import { SublevelMenuComponent } from './dashboard-layout/sidebar/sublevel-menu.
     MatIconModule,
     MatButtonModule,
     MatListModule,
-    MatCardModule
+    MatCardModule,
+    MatFormFieldModule, 
+    MatInputModule,
+    MatSelectModule,
+    MatTableModule,
+    MatSortModule,
+    MatExpansionModule,
+    MatButtonToggleModule
   ]
 })
 export class DashboardModule { }
