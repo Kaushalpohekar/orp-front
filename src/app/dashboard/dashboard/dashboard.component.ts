@@ -9,14 +9,16 @@ import { MatSort } from '@angular/material/sort';
   styleUrls: ['./dashboard.component.css']
 })
 
-export class DashboardComponent  implements OnInit {
+export class DashboardComponent implements OnInit {
+  displayedColumns: string[] = ['name', 'age', 'city', 'Date'];
+  dataSource = new MatTableDataSource<Person>(ELEMENT_DATA);
+  panelOpenState = false;
 
-  constructor() { }
+  @ViewChild(MatSort, { static: true }) sort!: MatSort;
 
-  ngOnInit(): void {
-    
+  ngOnInit() {
+    this.dataSource.sort = this.sort;
   }
-
 }
 
 export interface Person {

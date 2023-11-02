@@ -30,6 +30,8 @@ interface SideNavToggle {
 })
 export class SidebarComponent  implements OnInit {
 
+  userType!:string|null;
+
   @Output() onToggleSideNav: EventEmitter<SideNavToggle> = new EventEmitter();
   collapsed = false;
   screenWidth = 0;
@@ -49,14 +51,15 @@ export class SidebarComponent  implements OnInit {
 
   ngOnInit(): void {
       this.screenWidth = window.innerWidth;
-      this.filterNavData();
   }
 
-  filterNavData(): void {
-    const userType = this.authService.getUserType();
-    console.log(userType)
-  
-    if (userType === 'Standard') {
+  getType(){
+    this.userType = this.authService.getUserType();
+    this.filterNavData();
+  }
+
+  filterNavData(): void {  
+    if (this.userType === 'Standard') {
       this.navData = this.navData.filter(item => item.UserType !== 'Standard');
     }
   }

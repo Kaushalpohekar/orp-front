@@ -4,7 +4,7 @@
 }
 
 .title {
-    padding-top: 0.5vh;
+    padding-top: 0vh;
     font-size: 1.5rem;
     font-weight: 550;
 }
@@ -17,11 +17,39 @@
     width: 100%;
     background-color: #e6e6e6;
     border: 1px solid #a6a6a6;
-    height: 99%;
+    height: 100%;
 }
 
 .filter{
     font-size: 1rem;
     font-weight: 550;
     color: green;
+}
+
+.chart {
+    min-height: 30vh;
+}
+
+@media (max-height: 799.98px) {
+    .chart {
+        min-height: 60vh;
+    }
+}
+
+@media (min-height: 800px) and (max-height: 999.98px) {
+    .chart {
+        min-height: 30vh;
+    }
+}
+
+@media (min-height: 1000px) {
+    .chart {
+        min-height: 30vh;
+    }
+}
+
+@media (max-width: 850px) and (max-height: 399.98px) and (orientation: landscape) {
+    .chart {
+        min-height: 60vh;
+    }
 }

@@ -80,7 +80,8 @@ import { AddDeviceComponent } from './settings/add-device/add-device.component';
     ReactiveFormsModule,
     MatDialogModule,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    FormsModule
   ]
 })
 export class DashboardModule { }

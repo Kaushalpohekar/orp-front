@@ -11,6 +11,8 @@ HighchartsMore(Highcharts);
 })
 export class AnalysisComponent implements OnInit{
 
+  selectedValue!: string;
+
   dataStatus = [
     { status: 'online', percentage: 25.5 },
     { status: 'heating', percentage: 10.2 },
