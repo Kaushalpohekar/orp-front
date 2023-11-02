@@ -39,6 +39,9 @@ import { SidebarComponent } from './dashboard-layout/sidebar/sidebar.component';
 import { FooterComponent } from './dashboard-layout/footer/footer.component';
 import { DataContainerComponent } from './dashboard-layout/data-container/data-container.component';
 import { SublevelMenuComponent } from './dashboard-layout/sidebar/sublevel-menu.component';
+import { SettingsComponent } from './settings/settings.component';
+import { AddUserComponent } from './settings/add-user/add-user.component';
+import { AddDeviceComponent } from './settings/add-device/add-device.component';
 
 
 
@@ -52,7 +55,10 @@ import { SublevelMenuComponent } from './dashboard-layout/sidebar/sublevel-menu.
     SidebarComponent,
     FooterComponent,
     DataContainerComponent,
-    SublevelMenuComponent
+    SublevelMenuComponent,
+    SettingsComponent,
+    AddUserComponent,
+    AddDeviceComponent
   ],
   imports: [
     CommonModule,
@@ -68,7 +74,9 @@ import { SublevelMenuComponent } from './dashboard-layout/sidebar/sublevel-menu.
     MatTableModule,
     MatSortModule,
     MatExpansionModule,
-    MatButtonToggleModule
+    MatButtonToggleModule,
+    ReactiveFormsModule,
+    MatDialogModule
   ]
 })
 export class DashboardModule { }

@@ -3,6 +3,7 @@ import { Component, Output, EventEmitter, OnInit, HostListener } from '@angular/
 import { Router } from '@angular/router';
 import { fadeInOut, INavbarData } from './helper';
 import { navbarData } from './nav-data';
+import { AuthService } from 'src/app/login/auth/auth.service';
 
 interface SideNavToggle {
   screenWidth: number;
@@ -44,10 +45,20 @@ export class SidebarComponent  implements OnInit {
     }
   }
 
-  constructor(public router: Router) {}
+  constructor(public router: Router,public authService: AuthService) {}
 
   ngOnInit(): void {
       this.screenWidth = window.innerWidth;
+      this.filterNavData();
+  }
+
+  filterNavData(): void {
+    const userType = this.authService.getUserType();
+    console.log(userType)
+  
+    if (userType === 'Standard') {
+      this.navData = this.navData.filter(item => item.UserType !== 'Standard');
+    }
   }
 
   toggleCollapse(): void {

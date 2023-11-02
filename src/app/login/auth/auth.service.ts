@@ -10,7 +10,7 @@ export class AuthService {
   token!: string | null;
 
   constructor(private http: HttpClient, private router: Router) {}
-  private readonly API_URL = 'http://localhost:3000';
+  private readonly API_URL = 'http://localhost:4000';
 
   login(loginData: any): Observable<any> {
     return this.http.post(`${this.API_URL}/login`, loginData);
@@ -28,13 +28,34 @@ export class AuthService {
     this.getUserDetails();
   }
 
+  setUserType(userType: string) {
+    sessionStorage.setItem('userType', userType);
+  }
+
+  getUserType(): string | null {
+    return sessionStorage.getItem('userType');
+  }
+
+  setUserId(UserId: string){
+    sessionStorage.setItem('UserId', UserId);
+  }
+
+  getUserId(): string | null {
+    return sessionStorage.getItem('UserId');
+  }
+
   getUserDetails(): void {
     const token = this.getToken();
     if (token) {
-      this.http.get(`${this.API_URL}/fetchAllUsers`, { headers: { Authorization: `Bearer ${token}` } })
+      this.http.get(`${this.API_URL}/user`, { headers: { Authorization: `Bearer ${token}` } })
         .subscribe(
           (user: any) => {
-            return user;
+            const dataSource=user.user[0];
+            const userType = dataSource.UserType;
+            this.setUserType(userType);
+
+            const UserId = dataSource.UserId;
+            this.setUserId(UserId);
           },
           (error: any) => {
             console.error(error);
@@ -52,5 +73,6 @@ export class AuthService {
     this.isLoggedIn();
     this.router.navigate(['/login/login']);
   }
+  
   
 }
