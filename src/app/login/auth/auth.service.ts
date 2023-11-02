@@ -10,7 +10,7 @@ export class AuthService {
   token!: string | null;
 
   constructor(private http: HttpClient, private router: Router) {}
-  private readonly API_URL = 'http://localhost:3000';
+  private readonly API_URL = 'http://localhost:4000';
 
   login(loginData: any): Observable<any> {
     return this.http.post(`${this.API_URL}/login`, loginData);
