@@ -106,12 +106,13 @@
             </div>
         </div>
         <div class="row pt-2">
-        	<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-2">
+        	<div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-2">
         		<mat-card>
         			<mat-card-content>
 		        		<div class="container-fluid">
 					    	<div class="row">
 					    		<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
+					    			<div>Download Report</div>
 					        		<mat-button-toggle-group name="fontStyle" class="button-group" aria-label="Font Style">
 										<mat-button-toggle class="button-group" value="bold">CSV</mat-button-toggle>
 										<mat-button-toggle class="button-group" value="italic">Excel</mat-button-toggle>
@@ -119,7 +120,10 @@
 									</mat-button-toggle-group>
 					        	</div>
 
-					    		<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
+					        	<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+					        		<div>Apply Filter</div>
+					        	</div>
+					    		<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
 					                <mat-form-field appearance="outline" class="form-field">
 					                    <mat-label>Select Device</mat-label>
 					                    <mat-select required>
@@ -128,7 +132,7 @@
 					                    </mat-select>
 					                </mat-form-field>
 					            </div>
-					            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
+					            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
 					                <mat-form-field appearance="outline" class="form-field">
 					                    <mat-label>Select Device</mat-label>
 					                    <mat-select required>
@@ -137,7 +141,7 @@
 					                    </mat-select>
 					                </mat-form-field>
 					            </div>
-					            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
+					            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
 					                <mat-form-field appearance="outline" class="form-field">
 					                    <mat-label>Select Device</mat-label>
 					                    <mat-select required>
@@ -146,7 +150,7 @@
 					                    </mat-select>
 					                </mat-form-field>
 					            </div>
-					            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
+					            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
 					                <div class="d-flex justify-content-end">
 					                	<button mat-raised-button style="background-color: #e6e6e6;">Primary</button>
 					                </div>
@@ -156,7 +160,7 @@
         			</mat-card-content>
         		</mat-card>
         	</div>
-        	<div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 mb-2">
+        	<div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 mb-2">
         		<mat-card class="mat-card-outline">
                     <mat-card-content>
                         <table mat-table [dataSource]="dataSource" matSort class="custom-theme-table mat-table">

@@ -1,51 +1,33 @@
-import { Component, OnInit } from '@angular/core';
-import * as Highcharts from 'highcharts';
-import HC_map from 'highcharts/modules/map';
-HC_map(Highcharts);
+
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatSort } from '@angular/material/sort';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
+
 export class DashboardComponent  implements OnInit {
 
   constructor() { }
 
   ngOnInit(): void {
-    this.createMapChart();
+    
   }
 
-  createMapChart(): void {
-    Highcharts.mapChart('india-map', {
-      chart: {
-        map: 'countries/in/in-all'
-      },
-      title: {
-        text: 'India Map with Markers'
-      },
-      series: [{
-        name: 'Cities',
-        type: 'mappoint',
-        color: 'red',
-        data: [{
-          name: 'Delhi',
-          lat: 28.6139,
-          lon: 77.2090
-        }, {
-          name: 'Mumbai',
-          lat: 19.0760,
-          lon: 72.8777
-        }, {
-          name: 'Kolkata',
-          lat: 22.5726,
-          lon: 88.3639
-        }, {
-          name: 'Chennai',
-          lat: 13.0827,
-          lon: 80.2707
-        }]
-      }]
-    });
-  }
 }
+
+export interface Person {
+  name: string;
+  age: number;
+  city: string;
+  Date: string;
+}
+
+const ELEMENT_DATA: Person[] = [
+  { name: 'Alice', age: 28, city: 'New York', Date: "10-20-2023" },
+  { name: 'Bob', age: 22, city: 'Los Angeles', Date: "10-20-2023" }
+  // Add more data entries as needed
+];
