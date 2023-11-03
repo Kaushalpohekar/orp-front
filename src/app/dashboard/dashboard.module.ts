@@ -44,6 +44,7 @@ import { SublevelMenuComponent } from './dashboard-layout/sidebar/sublevel-menu.
 import { SettingsComponent } from './settings/settings.component';
 import { AddUserComponent } from './settings/add-user/add-user.component';
 import { AddDeviceComponent } from './settings/add-device/add-device.component';
+import { MapComponent } from './dashboard/map/map.component';
 
 
 
@@ -60,7 +61,8 @@ import { AddDeviceComponent } from './settings/add-device/add-device.component';
     SublevelMenuComponent,
     SettingsComponent,
     AddUserComponent,
-    AddDeviceComponent
+    AddDeviceComponent,
+    MapComponent
   ],
   imports: [
     CommonModule,
