@@ -38,7 +38,7 @@
 
 @media (min-height: 800px) and (max-height: 999.98px) {
     .chart {
-        min-height: 30vh;
+        min-height: 27vh;
     }
 }
 
