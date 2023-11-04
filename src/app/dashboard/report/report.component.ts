@@ -3,6 +3,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { DashDataServiceService } from '../dash-data-service/dash-data-service.service';
 import { FormControl, Validators } from '@angular/forms';
+import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 
 @Component({
   selector: 'app-report',
@@ -19,12 +20,36 @@ export class ReportComponent implements OnInit {
 
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
   dataSource2: any;
+  currentDate: Date = new Date();
+  startDate!: Date;
+  endDate: Date = this.currentDate;
 
   constructor(public dashDataService:DashDataServiceService){}
 
   ngOnInit() {
     this.dataSource.sort = this.sort;
     this.deviceList();
+  }
+
+  updateStartDate(event: MatDatepickerInputEvent<any, any>): void {
+    const selectedStartDate = event.value;
+    this.startDate = selectedStartDate;
+  }
+
+  // Function to update the end date
+  updateEndDate(event: MatDatepickerInputEvent<any, any>): void {
+    const selectedEndDate = event.value;
+
+    // Check if the selected end date is greater than or equal to the start date
+    if (!this.startDate || selectedEndDate >= this.startDate) {
+      // Update the end date value
+      this.endDate = selectedEndDate;
+    } else {
+      // Reset the end date to the current date or handle the case where the selected end date is before the start date
+      this.endDate = this.currentDate;
+      // You can also show an error message to the user
+      console.error('End date must be greater than or equal to the start date');
+    }
   }
 
   deviceList(){

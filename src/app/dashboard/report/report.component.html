@@ -34,7 +34,8 @@
 					            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
 					                <mat-form-field class="form-field" appearance="outline">
 										<mat-label>Start Date</mat-label>
-										<input matInput placeholder="Select Date" [matDatepicker]="startPicker" required  [formControl]="start_date">
+										<input matInput placeholder="Select Date" [matDatepicker]="startPicker" required  [formControl]="start_date"
+										[max]="currentDate" (dateChange)="updateStartDate($event)">
 										<mat-datepicker-toggle matPrefix [for]="startPicker"></mat-datepicker-toggle>
 										<mat-datepicker #startPicker></mat-datepicker>
 									  </mat-form-field>
@@ -42,7 +43,8 @@
 					            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
 					                <mat-form-field class="form-field" appearance="outline">
 										<mat-label>End Date</mat-label>
-										<input matInput placeholder="Select Date" [matDatepicker]="endPicker" required  [formControl]="end_date">
+										<input matInput placeholder="Select Date" [matDatepicker]="endPicker" required  [formControl]="end_date"
+										[min]="startDate" [max]="currentDate" (dateChange)="updateEndDate($event)">
 										<mat-datepicker-toggle matPrefix [for]="endPicker"></mat-datepicker-toggle>
 										<mat-datepicker #endPicker></mat-datepicker>
 									  </mat-form-field>
