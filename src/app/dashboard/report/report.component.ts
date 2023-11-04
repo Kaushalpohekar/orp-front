@@ -1,6 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
+import { AuthService } from '../../login/auth/auth.service';
+import { DashDataServiceService } from '../dash-data-service/dash-data-service.service';
+
 
 @Component({
   selector: 'app-report',
@@ -9,29 +12,41 @@ import { MatSort } from '@angular/material/sort';
 })
 export class ReportComponent implements OnInit {
   displayedColumns: string[] = ['name', 'age', 'city', 'Date'];
-  dataSource = new MatTableDataSource<Person>(ELEMENT_DATA);
+  dataSource = new MatTableDataSource<Devices>(ELEMENT_DATA);
   panelOpenState = false;
+  CompanyEmail!: string;
+
+  constructor(private authService: AuthService, private dashDataService: DashDataServiceService) {}
+
 
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
 
   ngOnInit() {
-    this.dataSource.sort = this.sort;
+    this.CompanyEmail = this.authService.getCompanyEmail() ?? '';
+    this.deviceList();
+  }
+
+  deviceList(){
+    if(this.CompanyEmail){
+      this.dashDataService.deviceDetails(this.CompanyEmail).subscribe(
+        (device) => {
+          this.dataSource = device.devices;
+        },
+        (error) => {
+          console.log("Error while fetchingg tthee device List");
+        }
+      );
+    }
   }
 }
 
-export interface Person {
-  name: string;
-  age: number;
-  city: string;
-  Date: string;
+export interface Devices {
+  device_name: string;
+  pump1: string;
+  pump2: string;
+  Location: string;
+  device_latitude: number;
+  device_longitute: number;
 }
 
-const ELEMENT_DATA: Person[] = [
-  { name: 'Alice', age: 28, city: 'New York', Date: "10-20-2023" },
-  { name: 'Bob', age: 22, city: 'Los Angeles', Date: "10-20-2023" },
-  { name: 'Alice', age: 28, city: 'New York', Date: "10-20-2023" },
-  { name: 'Bob', age: 22, city: 'Los Angeles', Date: "10-20-2023" },
-  { name: 'Alice', age: 28, city: 'New York', Date: "10-20-2023" },
-  { name: 'Bob', age: 22, city: 'Los Angeles', Date: "10-20-2023" },
-  // Add more data entries as needed
-];
+const ELEMENT_DATA: Devices[] = [];

@@ -58,7 +58,10 @@ export class SettingsComponent implements OnInit{
       this.dashDataService.deviceDetails(this.CompanyEmail).subscribe(
         (device) => {
           this.dataSource2 = device.devices.map((d: any) => ({
-            DateOfIssue: this.datePipe.transform(d.issue_date, 'yyyy-MM-dd') // Format the date here
+            DateOfIssue: this.datePipe.transform(d.issue_date, 'yyyy-MM-dd'),
+            device_uid: d.device_uid,
+            device_name: d.device_name,
+
           }));
         },
         (error) => {
