@@ -44,6 +44,15 @@ export class AuthService {
     return sessionStorage.getItem('UserId');
   }
 
+  setCompanyEmail(companyEmail: string){
+    sessionStorage.setItem('companyEmail', companyEmail);
+  }
+
+  getCompanyEmail(): string | null {
+    return sessionStorage.getItem('companyEmail');
+  }
+
+
   getUserDetails(): void {
     const token = this.getToken();
     if (token) {
@@ -56,6 +65,9 @@ export class AuthService {
 
             const UserId = dataSource.UserId;
             this.setUserId(UserId);
+
+            const companyEmail = dataSource.CompanyEmail;
+            this.setCompanyEmail(companyEmail);
           },
           (error: any) => {
             console.error(error);
@@ -70,6 +82,7 @@ export class AuthService {
 
   logout(): void {
     sessionStorage.removeItem('token');
+    sessionStorage.removeItem('CompanyEmail');
     this.isLoggedIn();
     this.router.navigate(['/login/login']);
   }

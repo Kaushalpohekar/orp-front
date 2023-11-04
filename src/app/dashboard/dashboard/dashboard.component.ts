@@ -3,6 +3,8 @@ import * as Highcharts from 'highcharts';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import * as L from 'leaflet';
+import { AuthService } from '../../login/auth/auth.service';
+import { DashDataServiceService } from '../dash-data-service/dash-data-service.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -10,61 +12,70 @@ import * as L from 'leaflet';
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
-  displayedColumns: string[] = ['name', 'age', 'city', 'Date'];
-  dataSource = new MatTableDataSource<Person>(ELEMENT_DATA);
+  displayedColumns: string[] = ['DeviceName', 'Pump 1', 'Pump 2', 'Location'];
+  dataSource = new MatTableDataSource<Device>(ELEMENT_DATA);
   panelOpenState = false;
+  CompanyEmail!: string;
+  devices!: any[];
 
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
   @ViewChild('mapContainer') mapContainer!: ElementRef;
 
   private Highcharts: typeof Highcharts = Highcharts;
 
-  constructor(private el: ElementRef) {}
+  constructor(private el: ElementRef, private authService: AuthService, private dashDataService: DashDataServiceService) {}
 
   ngOnInit() {
+    this.CompanyEmail = this.authService.getCompanyEmail() ?? '';
     this.dataSource.sort = this.sort;
-    this.indiamap();
+    this.deviceList();
   }
 
-  indiamap() {
-    const map = L.map('india-map').setView([20.5937, 78.9629], 5);
+  deviceList(){
+    if(this.CompanyEmail){
+      this.dashDataService.deviceDetails(this.CompanyEmail).subscribe(
+        (device) => {
+          this.dataSource = device.devices;
+          this.devices = device.devices;
+          this.indiamap(this.devices);
+        },
+        (error) => {
+          console.log("Error while fetchingg tthee device List");
+        }
+      );
+    }
+  }
+
+  indiamap(devices: Device[]) {
+    const map = L.map('india-map',{attributionControl: false}).setView([20.5937, 78.9629], 5);
 
     // Add a tile layer (you can use your preferred map provider)
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 18,
     }).addTo(map);
 
-    // Create a custom icon
-    const customIcon = L.icon({
-      iconUrl: 'assets/img/icons8-factory-64.png', // Adjust the path accordingly
-      iconSize: [32, 32], // Width and height of the icon
-    });
-    //orp-front/src/assets/img/icons8-factory-64.png
+      devices.forEach(device => {
+        const customIcon = L.icon({
+          iconUrl: 'assets/img/icons8-factory-64.png', // Adjust the path accordingly
+          iconSize: [32, 32], // Width and height of the icon
+        });
 
-    // Add a marker for Delhi with the custom icon
-    L.marker([28.6139, 77.2090], { icon: customIcon }).addTo(map)
-      .bindPopup('12 Devices, Delhi')
-      .openPopup();
-   
-      L.marker([24.4667, 54.3667], { icon: customIcon }).addTo(map)
-      .bindPopup('10 Devices, UAE')
-      .openPopup();
+        const { device_latitude, device_longitute, device_name, Location } = device;
+        console.log(device);
 
-      L.marker([19.0760, 72.8777], { icon: customIcon }).addTo(map)
-      .bindPopup('Mumbai, india')
-      .openPopup();
-
+        const marker = L.marker([device_latitude, device_longitute], { icon: customIcon }).addTo(map);
+        marker.bindPopup(`${device_name}, ${Location}`);
+      });
   }
 }
 
-export interface Person {
-  name: string;
-  age: number;
-  city: string;
-  Date: string;
+export interface Device {
+  device_name: string;
+  pump1: string;
+  pump2: string;
+  Location: string;
+  device_latitude: number;
+  device_longitute: number;
 }
 
-const ELEMENT_DATA: Person[] = [
-  { name: 'Alice', age: 28, city: 'New York', Date: '10-20-2023' },
-  { name: 'Bob', age: 22, city: 'Los Angeles', Date: '10-20-2023' },
-];
+const ELEMENT_DATA: Device[] = [];
