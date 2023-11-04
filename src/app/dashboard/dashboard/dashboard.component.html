@@ -1,6 +1,6 @@
 <div class="content">
 	<div class="container-fluid">
-		<div class="row pt-2 mb-1" style="height: 5vh;">
+		<div class="row pt-2 mb-1">
 			<div class="col-11">
 				<div class="title">EcoTrade Dashboard</div>
 			</div>
@@ -8,21 +8,20 @@
 		<div class="row mb-2">
 			<div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
                 <mat-card class="card">               
-                    <!-- <div #container style="width: 100%; height: 500px;"></div> -->
                     <mat-card-content>
-                        <div id="india-map" style="height: 70vh; z-index: 0;"></div>
+                        <div id="india-map" class="chart"></div>
                     </mat-card-content>
 				</mat-card>
 			</div>
 			<div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2">
-				<mat-card class="mat-card-outline card">
+				<mat-card class="mat-card-outline">
                     <mat-card-content>
                     	<div class="title-2 d-flex align-items-center mb-2">
 						    <mat-icon style="vertical-align: middle;">home</mat-icon>
 						    <span style="vertical-align: middle;">Site Status</span>
 						</div>
 						<mat-divider class="divider"></mat-divider>
-
+                        <div class="table-container" style="overflow: auto;" class="card2">
                         <table mat-table [dataSource]="dataSource" matSort class="custom-theme-table mat-table">
                             
                             <ng-container matColumnDef="DeviceName">
@@ -50,6 +49,7 @@
                             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                             <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
                         </table>
+                        </div>
                     </mat-card-content>
                 </mat-card>
 			</div>

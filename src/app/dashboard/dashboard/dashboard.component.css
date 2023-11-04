@@ -7,10 +7,16 @@
     padding-top: 0.5vh;
     font-size: 1.5rem;
     font-weight: 550;
+    padding-bottom: 1vh;
 }
 
-.card{
-    height: 77vh;
+.chart{
+    height: 76vh;
+    z-index: 0;
+}
+
+.card2{
+    max-height: 72.7vh;
 }
 
 .title-2{
@@ -18,9 +24,13 @@
     font-weight: 550;
 }
 
-.divider{
-    width: 80%;
-}
+.custom-theme-table th {
+    position: sticky;
+    top: 0;
+    background-color: white;
+    z-index: 2;
+  }
+
 
 
 

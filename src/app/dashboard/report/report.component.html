@@ -26,16 +26,15 @@
 					    		<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
 					                <mat-form-field appearance="outline" class="form-field">
 					                    <mat-label>Select Device</mat-label>
-					                    <mat-select required>
-					                        <mat-option>-- None --</mat-option>
-					                        <mat-option value="option">Option</mat-option>
-					                    </mat-select>
+					                    <mat-select required [formControl]="device_uid">
+											<mat-option *ngFor="let device of dataSource2" [value]="device.device_uid">{{device.device_name}}</mat-option>
+										</mat-select>
 					                </mat-form-field>
 					            </div>
 					            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
 					                <mat-form-field class="form-field" appearance="outline">
 										<mat-label>Start Date</mat-label>
-										<input matInput placeholder="Select Date" [matDatepicker]="startPicker" required>
+										<input matInput placeholder="Select Date" [matDatepicker]="startPicker" required  [formControl]="start_date">
 										<mat-datepicker-toggle matPrefix [for]="startPicker"></mat-datepicker-toggle>
 										<mat-datepicker #startPicker></mat-datepicker>
 									  </mat-form-field>
@@ -43,7 +42,7 @@
 					            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
 					                <mat-form-field class="form-field" appearance="outline">
 										<mat-label>End Date</mat-label>
-										<input matInput placeholder="Select Date" [matDatepicker]="endPicker" required>
+										<input matInput placeholder="Select Date" [matDatepicker]="endPicker" required  [formControl]="end_date">
 										<mat-datepicker-toggle matPrefix [for]="endPicker"></mat-datepicker-toggle>
 										<mat-datepicker #endPicker></mat-datepicker>
 									  </mat-form-field>

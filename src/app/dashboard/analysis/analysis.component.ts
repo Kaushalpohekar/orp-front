@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import * as Highcharts from 'highcharts';
 import HighchartsMore from 'highcharts/highcharts-more';
+import { DashDataServiceService } from '../dash-data-service/dash-data-service.service';
+import { FormControl, Validators } from '@angular/forms';
 
 HighchartsMore(Highcharts);
 
@@ -12,17 +14,38 @@ HighchartsMore(Highcharts);
 export class AnalysisComponent implements OnInit{
 
   selectedValue!: string;
+  device_uid = new FormControl('',[Validators.required])
 
   dataStatus = [
     { status: 'online', percentage: 25.5 },
     { status: 'heating', percentage: 10.2 },
     { status: 'idle', percentage: 64.3 }
   ];
+  dataSource2: any;
 
   ngOnInit() {
     this.createDonutChart(this.dataStatus);
     this.createBarChart();
     this.createLineChart();
+    this.deviceList();
+  }
+
+  constructor(public dashDataService : DashDataServiceService){
+    
+  }
+
+  deviceList(){
+    const CompanyEmail = sessionStorage.getItem('companyEmail')
+    if(CompanyEmail){
+      this.dashDataService.deviceDetails(CompanyEmail).subscribe(
+        (device) => {
+          this.dataSource2 = device.devices;
+        },
+        (error) => {
+          console.log("Error while fetching the device List");
+        }
+      );
+    }
   }
 
   createDonutChart(dataStatus: any) {
