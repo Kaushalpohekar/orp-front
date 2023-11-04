@@ -13,8 +13,8 @@ export class DashDataServiceService {
   // private readonly API_URL = 'http://ec2-3-108-57-100.ap-south-1.compute.amazonaws.com:3000';
   private readonly API_URL = 'http://localhost:4000';
 
-  userDetails(userData: any):Observable<any> {
-    return this.http.get(`${this.API_URL}/fetchAllUsers`,userData);
+  userDetails(CompanyEmail: string):Observable<any> {
+    return this.http.get(`${this.API_URL}/getUsersForUsers/${CompanyEmail}`);
   }
 
   deviceDetails(CompanyEmail: string):Observable<any> {
