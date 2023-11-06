@@ -11,9 +11,8 @@
 			    		<div class="col-xl-2 col-lg-2 col-md-4 col-sm-12 mb-1">
 			                <mat-form-field appearance="outline" class="form-field">
 			                    <mat-label>Select Device</mat-label>
-			                    <mat-select required>
-			                        <mat-option>-- None --</mat-option>
-			                        <mat-option value="option">Option</mat-option>
+			                    <mat-select required [formControl]="device_uid">
+			                        <mat-option *ngFor="let device of dataSource2" [value]="device.device_uid">{{device.device_name}}</mat-option>
 			                    </mat-select>
 			                </mat-form-field>
 			            </div>

@@ -21,4 +21,8 @@ export class DashDataServiceService {
     return this.http.get(`${this.API_URL}/getDeviceForUsers/${CompanyEmail}`);
   }
 
+  reportData(reportData: any):Observable<any> {
+    console.log(reportData);
+    return this.http.post(`${this.API_URL}/getReportData`, reportData);
+  }
 }
