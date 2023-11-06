@@ -19,10 +19,10 @@ export class AddDeviceComponent implements OnInit{
   PersonalEmail!: string;
 
   errorMessage = '';
-  TriggerValue = new FormControl('', [Validators.required, Validators.pattern(/^\d*\.?\d+$/), Validators.min(0), Validators.max(100)]);
+  DeviceLongitude = new FormControl('', [Validators.required]);
   DeviceName = new FormControl('', [Validators.required]);
   DeviceUID = new FormControl('', [Validators.required]);
-  DeviceLocation = new FormControl('', [Validators.required]);
+  DeviceLatitude = new FormControl('', [Validators.required]);
 
   @HostListener('window:resize')
   onWindowResize() {
@@ -52,5 +52,35 @@ export class AddDeviceComponent implements OnInit{
 
   onNoClick(): void {
     this.dialogRef.close();
+  }
+
+  onSave(){
+    if(this.DeviceLatitude.valid && this.DeviceLongitude.valid && this.DeviceUID.valid && this.DeviceName.valid){
+      
+      const Email=sessionStorage.getItem('companyEmail');
+
+      const deviceData={
+        device_uid: this.DeviceUID.value, 
+        device_longitute: this.DeviceLongitude.value, 
+        device_latitude: this.DeviceLatitude.value, 
+        device_name: this.DeviceName.value, 
+        company_email: Email
+      }
+
+      this.DashDataService.addDevice(deviceData).subscribe(
+          () => {
+          this.snackBar.open('Device Added successfully!', 'Dismiss', {
+            duration: 2000
+          });
+          this.dialogRef.close();
+        },
+        (error) => {
+          this.snackBar.open('Failed. Please try again.',
+            'Dismiss',
+            { duration: 2000 }
+          );
+        }
+      );
+    }    
   }
 }

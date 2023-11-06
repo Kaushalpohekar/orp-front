@@ -45,6 +45,8 @@ import { SettingsComponent } from './settings/settings.component';
 import { AddUserComponent } from './settings/add-user/add-user.component';
 import { AddDeviceComponent } from './settings/add-device/add-device.component';
 import { MapComponent } from './dashboard/map/map.component';
+import { EditDeviceComponent } from './settings/edit-device/edit-device.component';
+import { EditUserComponent } from './settings/edit-user/edit-user.component';
 
 
 
@@ -62,7 +64,9 @@ import { MapComponent } from './dashboard/map/map.component';
     SettingsComponent,
     AddUserComponent,
     AddDeviceComponent,
-    MapComponent
+    MapComponent,
+    EditDeviceComponent,
+    EditUserComponent
   ],
   imports: [
     CommonModule,

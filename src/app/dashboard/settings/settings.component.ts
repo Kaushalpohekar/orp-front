@@ -6,6 +6,9 @@ import { DashDataServiceService } from '../dash-data-service/dash-data-service.s
 import { DatePipe } from '@angular/common';
 import { AddUserComponent } from './add-user/add-user.component';
 import { AddDeviceComponent } from './add-device/add-device.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { EditUserComponent } from './edit-user/edit-user.component';
+import { EditDeviceComponent } from './edit-device/edit-device.component';
 
 @Component({
   selector: 'app-settings',
@@ -33,6 +36,7 @@ export class SettingsComponent implements OnInit{
     private dashDataService: DashDataServiceService,
     private datePipe: DatePipe,
     private dialog:MatDialog,
+    public snackBar: MatSnackBar,
   ) {}
 
   ngOnInit(): void{
@@ -54,16 +58,59 @@ export class SettingsComponent implements OnInit{
     }
   }
 
+  deleteUser(user:any){
+    const userID = user.UserId;
+    if(userID){
+      this.dashDataService.deleteUser(userID).subscribe(
+        () => {
+          this.snackBar.open('User Deleted successfully!', 'Dismiss', {
+            duration: 2000
+          });
+        },
+        (error) => {
+          this.snackBar.open('Failed to delete User. Please try again.',
+            'Dismiss',
+            { duration: 2000 }
+          );
+        }
+      )
+    }
+  }
+
+  deleteDevice(device:any){
+    const deviceID = device.device_uid;
+    if(deviceID){
+      this.dashDataService.deleteDevice(deviceID).subscribe(
+        () => {
+          this.snackBar.open('Device Deleted successfully!', 'Dismiss', {
+            duration: 2000
+          });
+        },
+        (error) => {
+          this.snackBar.open('Failed to delete device. Please try again.',
+            'Dismiss',
+            { duration: 2000 }
+          );
+        }
+      )
+    }
+  }
+
   deviceList(){
     if(this.CompanyEmail){
       this.dashDataService.deviceDetails(this.CompanyEmail).subscribe(
         (device) => {
           this.dataSource2 = device.devices.map((d: any) => ({
-            DateOfIssue: this.datePipe.transform(d.issue_date, 'dd-MM-yyyy')
+            DateOfIssue: this.datePipe.transform(d.issue_date, 'dd-MM-yyyy'),
+            device_name:d.device_name,
+            device_uid:d.device_uid,   
+            device_latitude:d.device_latitude,
+            device_longitude:d.device_longitute,
+            entry_id:d.entry_id  
           }));
         },
         (error) => {
-          console.log("Error while fetchingg tthee device List");
+          console.log("Error while fetching the device List");
         }
       );
     }
@@ -85,6 +132,26 @@ export class SettingsComponent implements OnInit{
     dialogConfig.maxWidth = '90vw';
     const dialogRef = this.dialog.open(AddDeviceComponent, dialogConfig);
     dialogRef.afterClosed().subscribe(deviceAdded => {});
+  }
+
+  openEditUserDialog(user:any): void {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.width = '500px';
+    dialogConfig.height = 'auto';
+    dialogConfig.maxWidth = '90vw';
+    dialogConfig.data = {user};
+    const dialogRef = this.dialog.open(EditUserComponent, dialogConfig);
+    dialogRef.afterClosed().subscribe(userAdded => {});
+  }
+
+  openEditDeviceDialog(devices:any): void {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.width = '500px';
+    dialogConfig.height = 'auto';
+    dialogConfig.maxWidth = '90vw';
+    dialogConfig.data = {devices};
+    const dialogRef = this.dialog.open(EditDeviceComponent, dialogConfig);
+    dialogRef.afterClosed().subscribe(userAdded => {});
   }
 
 }

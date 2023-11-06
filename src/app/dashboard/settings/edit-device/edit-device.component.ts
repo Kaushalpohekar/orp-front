@@ -6,18 +6,24 @@ import {FormControl, Validators, FormsModule, ReactiveFormsModule} from '@angula
 import { DashDataServiceService } from '../../dash-data-service/dash-data-service.service';
 
 @Component({
-  selector: 'app-add-user',
-  templateUrl: './add-user.component.html',
-  styleUrls: ['./add-user.component.css']
+  selector: 'app-edit-device',
+  templateUrl: './edit-device.component.html',
+  styleUrls: ['./edit-device.component.css']
 })
-export class AddUserComponent implements OnInit{
+export class EditDeviceComponent  implements OnInit{
+  CompanyEmail! :string;
+  CompanyName!:string;
+  UserType!: string;
+  ContactNo!: string;
+  PersonalEmail!: string;
+  device:any;
+  deviceId!:string;
 
-  FirstName = new FormControl('', [Validators.required]);
-  LastName = new FormControl('', [Validators.required]);
-  PersonalEmail = new FormControl('', [Validators.required, Validators.email]);
-  ContactNo = new FormControl('', [Validators.required]);
-  UserType = new FormControl('', [Validators.required]);
-  userId!: string | null;
+  errorMessage = '';
+  DeviceLongitude = new FormControl('', [Validators.required]);
+  DeviceName = new FormControl('', [Validators.required]);
+  DeviceUID = new FormControl('', [Validators.required]);
+  DeviceLatitude = new FormControl('', [Validators.required]);
 
   @HostListener('window:resize')
   onWindowResize() {
@@ -37,19 +43,14 @@ export class AddUserComponent implements OnInit{
     private DashDataService: DashDataServiceService,
     private authService: AuthService,
     public snackBar: MatSnackBar,
-    public dialogRef: MatDialogRef<AddUserComponent>,
+    public dialogRef: MatDialogRef<EditDeviceComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ){
+    this.device=data.devices;
+    this.deviceId=this.device.entry_id;
   }
 
   ngOnInit(){
-  }
-
-  getPersonalEmailErrorMessage() {
-    if (this.PersonalEmail.hasError('required')) {
-      return 'Email is Required';
-    }
-    return this.PersonalEmail.hasError('email') ? 'Not a valid email' : '';
   }
 
   onNoClick(): void {
@@ -57,29 +58,29 @@ export class AddUserComponent implements OnInit{
   }
 
   onSave(){
-    if(this.FirstName.valid && this.LastName.valid && this.PersonalEmail.valid && this.ContactNo.valid && this.UserType.valid){
+    if(this.DeviceLatitude.valid && this.DeviceLongitude.valid && this.DeviceUID.valid && this.DeviceName.valid){
       
       const Email=sessionStorage.getItem('companyEmail');
 
-      const userData={
-        userName:this.PersonalEmail.value, 
-        password:this.PersonalEmail.value, 
-        firstName:this.FirstName.value, 
-        lastName:this.LastName.value, 
-        contactNo:this.ContactNo.value, 
-        userType:this.UserType.value, 
-        companyEmail:Email
+      const deviceData={
+        device_uid: this.DeviceUID.value, 
+        device_longitute: this.DeviceLongitude.value, 
+        device_latitude: this.DeviceLatitude.value, 
+        device_name: this.DeviceName.value, 
+        company_email: Email
       }
 
-      this.DashDataService.addUser(userData).subscribe(
+      console.log(deviceData);
+
+      this.DashDataService.editDevice(this.deviceId,deviceData).subscribe(
           () => {
-          this.snackBar.open('User Added successfully!', 'Dismiss', {
+          this.snackBar.open('Device Updated successfully!', 'Dismiss', {
             duration: 2000
           });
           this.dialogRef.close();
         },
         (error) => {
-          this.snackBar.open('Failed. Please try again.',
+          this.snackBar.open('Failed to update device data. Please try again.',
             'Dismiss',
             { duration: 2000 }
           );

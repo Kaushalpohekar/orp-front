@@ -21,4 +21,27 @@ export class DashDataServiceService {
     return this.http.get(`${this.API_URL}/getDeviceForUsers/${CompanyEmail}`);
   }
 
+  addDevice(deviceData:any):Observable<any> {
+    return this.http.post(`${this.API_URL}/add-Device`,deviceData);
+  }
+
+  addUser(userData:any):Observable<any> {
+    return this.http.post(`${this.API_URL}/addUser`,userData);
+  }
+
+  deleteUser(userId:string):Observable<any> {
+    return this.http.delete(`${this.API_URL}/deleteUser/${userId}`);
+  }
+
+  deleteDevice(deviceUid:string):Observable<any> {
+    return this.http.delete(`${this.API_URL}/delete-Device/${deviceUid}`);
+  }
+
+  editDevice(deviceUid:string,deviceData:any):Observable<any> {
+    return this.http.put(`${this.API_URL}/edit-Device/${deviceUid}`,deviceData);
+  }
+
+  editUser(UserId:string,userData:any):Observable<any> {
+    return this.http.put(`${this.API_URL}/editUser/${UserId}`,userData);
+  }
 }
