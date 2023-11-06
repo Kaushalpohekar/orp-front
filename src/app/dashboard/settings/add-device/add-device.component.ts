@@ -1,17 +1,16 @@
-import { Component, HostListener, Inject } from '@angular/core';
-import { DashDataServiceService } from '../../dash-data-service/dash-data-service.service';
-import { AuthService } from 'src/app/login/auth/auth.service';
+import { Component, Inject, HostListener, OnInit } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { AuthService } from '../../../login/auth/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { FormControl, Validators } from '@angular/forms';
+import {FormControl, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import { DashDataServiceService } from '../../dash-data-service/dash-data-service.service';
 
 @Component({
   selector: 'app-add-device',
   templateUrl: './add-device.component.html',
   styleUrls: ['./add-device.component.css']
 })
-export class AddDeviceComponent {
-
+export class AddDeviceComponent implements OnInit{
   userId!: string | null;
   CompanyEmail! :string;
   CompanyName!:string;
@@ -20,10 +19,10 @@ export class AddDeviceComponent {
   PersonalEmail!: string;
 
   errorMessage = '';
-  TriggerValue = new FormControl('', [Validators.required, Validators.pattern(/^\d*\.?\d+$/), Validators.min(0), Validators.max(100)]);
+  DeviceLongitude = new FormControl('', [Validators.required]);
   DeviceName = new FormControl('', [Validators.required]);
   DeviceUID = new FormControl('', [Validators.required]);
-  DeviceLocation = new FormControl('', [Validators.required]);
+  DeviceLatitude = new FormControl('', [Validators.required]);
 
   @HostListener('window:resize')
   onWindowResize() {
@@ -55,23 +54,33 @@ export class AddDeviceComponent {
     this.dialogRef.close();
   }
 
-  getThresholdErrorMessage() {
-    if (this.TriggerValue.hasError('required')) {
-      return 'Threshold is required';
-    }
-    
-    if (this.TriggerValue.hasError('pattern')) {
-      return 'Not a valid number';
-    }
-    
-    if (this.TriggerValue.hasError('min')) {
-      return 'Not less than 0';
-    }
-    
-    if (this.TriggerValue.hasError('max')) {
-      return 'Not more than 100';
-    }
-    
-    return '';
+  onSave(){
+    if(this.DeviceLatitude.valid && this.DeviceLongitude.valid && this.DeviceUID.valid && this.DeviceName.valid){
+      
+      const Email=sessionStorage.getItem('companyEmail');
+
+      const deviceData={
+        device_uid: this.DeviceUID.value, 
+        device_longitute: this.DeviceLongitude.value, 
+        device_latitude: this.DeviceLatitude.value, 
+        device_name: this.DeviceName.value, 
+        company_email: Email
+      }
+
+      this.DashDataService.addDevice(deviceData).subscribe(
+          () => {
+          this.snackBar.open('Device Added successfully!', 'Dismiss', {
+            duration: 2000
+          });
+          this.dialogRef.close();
+        },
+        (error) => {
+          this.snackBar.open('Failed. Please try again.',
+            'Dismiss',
+            { duration: 2000 }
+          );
+        }
+      );
+    }    
   }
 }

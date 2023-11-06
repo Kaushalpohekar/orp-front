@@ -25,4 +25,28 @@ export class DashDataServiceService {
     console.log(reportData);
     return this.http.post(`${this.API_URL}/getReportData`, reportData);
   }
+  
+  addDevice(deviceData:any):Observable<any> {
+    return this.http.post(`${this.API_URL}/add-Device`,deviceData);
+  }
+
+  addUser(userData:any):Observable<any> {
+    return this.http.post(`${this.API_URL}/addUser`,userData);
+  }
+
+  deleteUser(userId:string):Observable<any> {
+    return this.http.delete(`${this.API_URL}/deleteUser/${userId}`);
+  }
+
+  deleteDevice(entryId:string):Observable<any> {
+    return this.http.delete(`${this.API_URL}/delete-Device/${entryId}`);
+  }
+
+  editDevice(entryId:string,deviceData:any):Observable<any> {
+    return this.http.put(`${this.API_URL}/edit-Device/${entryId}`,deviceData);
+  }
+
+  editUser(UserId:string,userData:any):Observable<any> {
+    return this.http.put(`${this.API_URL}/editUser/${UserId}`,userData);
+  }
 }
