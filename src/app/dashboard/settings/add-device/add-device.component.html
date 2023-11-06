@@ -6,28 +6,27 @@
 	</div>
 	<div class="row">
     	<div class="col-md-6 mb-2">
-    		<mat-form-field class="from-field">
+    		<mat-form-field appearance="outline" class="from-field">
 		        <mat-label>Device Name</mat-label>
 		        <input matInput [formControl]="DeviceName" required>
 		        <mat-error *ngIf="DeviceName.invalid">Device Name is Required.</mat-error>
 		     </mat-form-field>
     	</div>
     	<div class="col-md-6 mb-2">
-    		<mat-form-field class="from-field">
+    		<mat-form-field appearance="outline" class="from-field">
 		        <mat-label>Device Trigger</mat-label>
 		        <input matInput placeholder="35" [formControl]="TriggerValue" required>
-		        <mat-error *ngIf="TriggerValue.invalid">{{getThresholdErrorMessage()}}</mat-error>
 		      </mat-form-field>
     	</div>
     	<div class="col-md-12 mb-2">
-    		<mat-form-field class="from-field">
+    		<mat-form-field appearance="outline" class="from-field">
 		        <mat-label>Device Unique Id</mat-label>
 		        <input matInput [formControl]="DeviceUID" required>
 		        <mat-error *ngIf="DeviceName.invalid">Device Unique ID is Required.</mat-error>
 		     </mat-form-field>
     	</div>
     	<div class="col-md-12 mb-2">
-	    	<mat-form-field class="from-field">
+	    	<mat-form-field appearance="outline" class="from-field">
 			    <mat-label>Device Location</mat-label>
 			    <input matInput [formControl]="DeviceLocation" required>
 			    <mat-error *ngIf="DeviceName.invalid">Device Location is Required.</mat-error>
@@ -37,7 +36,7 @@
 	      <button mat-raised-button (click)="onNoClick()">Close</button>
 	    </div>
 	    <div class="col-md-6 mb-2">
-	      <button mat-raised-button style="background-color: #e6e6e6; color: #000;">Save</button>
+	      <button mat-raised-button style="color: #fff; background-color: #000;">Save</button>
 	    </div>
 	</div>
 </div>

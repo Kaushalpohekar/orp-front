@@ -1,16 +1,16 @@
-import { Component, HostListener, Inject } from '@angular/core';
-import { DashDataServiceService } from '../../dash-data-service/dash-data-service.service';
-import { AuthService } from 'src/app/login/auth/auth.service';
+import { Component, Inject, HostListener, OnInit } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { AuthService } from '../../../login/auth/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
+import {FormControl, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import { DashDataServiceService } from '../../dash-data-service/dash-data-service.service';
 
 @Component({
   selector: 'app-add-user',
   templateUrl: './add-user.component.html',
   styleUrls: ['./add-user.component.css']
 })
-export class AddUserComponent {
+export class AddUserComponent implements OnInit{
 
   FirstName = new FormControl('', [Validators.required]);
   LastName = new FormControl('', [Validators.required]);
@@ -59,4 +59,5 @@ export class AddUserComponent {
   onNoClick(): void {
     this.dialogRef.close();
   }
+
 }

@@ -6,49 +6,49 @@
 	</div>
 	<div class="row">
     	<div class="col-md-6 mb-2">
-    		<mat-form-field class="from-field">
+    		<mat-form-field appearance="outline" class="from-field">
 		        <mat-label>First Name</mat-label>
 		        <input matInput [formControl]="FirstName" required>
 		        <mat-error *ngIf="FirstName.invalid">First Name is Required.</mat-error>
 		     </mat-form-field>
     	</div>
     	<div class="col-md-6 mb-2">
-    		<mat-form-field class="from-field">
+    		<mat-form-field appearance="outline" class="from-field">
 		        <mat-label>Last Name</mat-label>
 		        <input matInput [formControl]="LastName" required>
 		        <mat-error *ngIf="LastName.invalid">Last Name is Required.</mat-error>
 		     </mat-form-field>
     	</div>
     	<div class="col-md-12 mb-2">
-	    	<mat-form-field class="from-field">
+	    	<mat-form-field appearance="outline" class="from-field">
 			    <mat-label>Personal Email</mat-label>
 			    <input matInput [formControl]="PersonalEmail" required>
 			    <mat-error *ngIf="PersonalEmail.invalid">{{getPersonalEmailErrorMessage()}}</mat-error>
 			</mat-form-field>
 		</div>
     	<div class="col-md-6 mb-2">
-    		<mat-form-field class="from-field">
+    		<mat-form-field appearance="outline" class="from-field">
 		        <mat-label>Contact No</mat-label>
 		        <input matInput [formControl]="ContactNo" required>
 		        <mat-error *ngIf="ContactNo.invalid">Contact No is Required.</mat-error>
 		    </mat-form-field>
     	</div>
     	<div class="col-md-6 mb-2">
-    		<mat-form-field class="from-field">
+    		<mat-form-field appearance="outline" class="from-field">
 		        <mat-label>Location</mat-label>
 		        <input matInput [formControl]="Location" required>
 		        <mat-error *ngIf="Location.invalid">Location is Required.</mat-error>
 		    </mat-form-field>
     	</div>
     	<div class="col-md-6 mb-2">
-    		<mat-form-field class="from-field">
+    		<mat-form-field appearance="outline" class="from-field">
 		        <mat-label>Designation</mat-label>
 		        <input matInput [formControl]="Designation" required>
 		        <mat-error *ngIf="Location.invalid">Designation is Required.</mat-error>
 		    </mat-form-field>
     	</div>
     	<div class="col-md-6 mb-2">
-    		<mat-form-field class="from-field">
+    		<mat-form-field appearance="outline" class="from-field">
 	            <mat-label>User Type</mat-label>
 	            <mat-select [formControl]="UserType" >
 	              <mat-option value="Admin">Admin</mat-option>
@@ -61,7 +61,7 @@
 	      <button mat-raised-button (click)="onNoClick()">Close</button>
 	    </div>
 	    <div class="col-md-6 mb-2">
-	      <button mat-raised-button style="background-color: #e6e6e6; color: #000;">Save</button>
+	      <button mat-raised-button style="color: #fff; background-color: #000;">Save</button>
 	    </div>
 	</div>
 </div>

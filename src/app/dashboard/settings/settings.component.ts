@@ -6,7 +6,6 @@ import { DashDataServiceService } from '../dash-data-service/dash-data-service.s
 import { DatePipe } from '@angular/common';
 import { AddUserComponent } from './add-user/add-user.component';
 import { AddDeviceComponent } from './add-device/add-device.component';
-import { DataSource } from '@angular/cdk/collections';
 
 @Component({
   selector: 'app-settings',
@@ -27,11 +26,13 @@ export class SettingsComponent implements OnInit{
   dataSource2: any;
   displayedColumns: string[] = ['Name', 'UserName', 'Contact', 'Action'];
   displayedColumns2: string[] = ['Device', 'Location', 'Date of Isssue', 'Action'];
+  intervalSubscription: Subscription | undefined;
 
   constructor(
     private authService: AuthService,
     private dashDataService: DashDataServiceService,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
+    private dialog:MatDialog,
   ) {}
 
   ngOnInit(): void{
@@ -58,7 +59,7 @@ export class SettingsComponent implements OnInit{
       this.dashDataService.deviceDetails(this.CompanyEmail).subscribe(
         (device) => {
           this.dataSource2 = device.devices.map((d: any) => ({
-            DateOfIssue: this.datePipe.transform(d.issue_date, 'yyyy-MM-dd') // Format the date here
+            DateOfIssue: this.datePipe.transform(d.issue_date, 'dd-MM-yyyy')
           }));
         },
         (error) => {
@@ -66,6 +67,24 @@ export class SettingsComponent implements OnInit{
         }
       );
     }
+  }
+
+  openAddUserDialog(): void {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.width = '500px';
+    dialogConfig.height = 'auto';
+    dialogConfig.maxWidth = '90vw';
+    const dialogRef = this.dialog.open(AddUserComponent, dialogConfig);
+    dialogRef.afterClosed().subscribe(userAdded => {});
+  }
+
+  openAddDeviceDialog(): void {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.width = '500px';
+    dialogConfig.height = 'auto';
+    dialogConfig.maxWidth = '90vw';
+    const dialogRef = this.dialog.open(AddDeviceComponent, dialogConfig);
+    dialogRef.afterClosed().subscribe(deviceAdded => {});
   }
 
 }

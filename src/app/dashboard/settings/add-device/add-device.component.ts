@@ -1,17 +1,16 @@
-import { Component, HostListener, Inject } from '@angular/core';
-import { DashDataServiceService } from '../../dash-data-service/dash-data-service.service';
-import { AuthService } from 'src/app/login/auth/auth.service';
+import { Component, Inject, HostListener, OnInit } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { AuthService } from '../../../login/auth/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { FormControl, Validators } from '@angular/forms';
+import {FormControl, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import { DashDataServiceService } from '../../dash-data-service/dash-data-service.service';
 
 @Component({
   selector: 'app-add-device',
   templateUrl: './add-device.component.html',
   styleUrls: ['./add-device.component.css']
 })
-export class AddDeviceComponent {
-
+export class AddDeviceComponent implements OnInit{
   userId!: string | null;
   CompanyEmail! :string;
   CompanyName!:string;
@@ -53,25 +52,5 @@ export class AddDeviceComponent {
 
   onNoClick(): void {
     this.dialogRef.close();
-  }
-
-  getThresholdErrorMessage() {
-    if (this.TriggerValue.hasError('required')) {
-      return 'Threshold is required';
-    }
-    
-    if (this.TriggerValue.hasError('pattern')) {
-      return 'Not a valid number';
-    }
-    
-    if (this.TriggerValue.hasError('min')) {
-      return 'Not less than 0';
-    }
-    
-    if (this.TriggerValue.hasError('max')) {
-      return 'Not more than 100';
-    }
-    
-    return '';
   }
 }

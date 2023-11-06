@@ -83,7 +83,8 @@ import { MapComponent } from './dashboard/map/map.component';
     MatDialogModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    FormsModule
+    FormsModule,
+    MatSnackBarModule
   ],
   providers: [
     DatePipe
