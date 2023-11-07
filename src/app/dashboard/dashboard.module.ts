@@ -90,7 +90,8 @@ import { ProfileComponent } from './profile/profile.component';
     MatDatepickerModule,
     MatNativeDateModule,
     FormsModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatPaginatorModule
   ],
   providers: [
     DatePipe

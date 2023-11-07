@@ -1,9 +1,13 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
+import { AuthService } from '../../login/auth/auth.service';
 import { DashDataServiceService } from '../dash-data-service/dash-data-service.service';
 import { FormControl, Validators } from '@angular/forms';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { DatePipe } from '@angular/common'; // Import DatePipe
+import { MatPaginator } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-report',
@@ -11,23 +15,25 @@ import { MatDatepickerInputEvent } from '@angular/material/datepicker';
   styleUrls: ['./report.component.css']
 })
 export class ReportComponent implements OnInit {
-  displayedColumns: string[] = ['name', 'age', 'city', 'Date'];
-  dataSource = new MatTableDataSource<Person>(ELEMENT_DATA);
+  displayedColumns: string[] = ['Device', 'Date', 'Time', 'ORP', 'Pump1', 'Pump2'];
+  dataSource = new MatTableDataSource<Devices>(ELEMENT_DATA);
   panelOpenState = false;
-  device_uid=new FormControl('',[Validators.required]);
-  start_date=new FormControl('',[Validators.required]);
-  end_date=new FormControl('',[Validators.required]);
+
+  constructor(private snackBar: MatSnackBar, private authService: AuthService, private dashDataService: DashDataServiceService, private datePipe: DatePipe) {} // Inject DatePipe
+
+  device_uid = new FormControl('', [Validators.required]);
+  start_date = new FormControl('', [Validators.required]);
+  end_date = new FormControl('', [Validators.required]);
 
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
+  @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
+
   dataSource2: any;
   currentDate: Date = new Date();
   startDate!: Date;
   endDate: Date = this.currentDate;
 
-  constructor(public dashDataService:DashDataServiceService){}
-
   ngOnInit() {
-    this.dataSource.sort = this.sort;
     this.deviceList();
   }
 
@@ -52,9 +58,9 @@ export class ReportComponent implements OnInit {
     }
   }
 
-  deviceList(){
-    const CompanyEmail = sessionStorage.getItem('companyEmail')
-    if(CompanyEmail){
+  deviceList() {
+    const CompanyEmail = sessionStorage.getItem('companyEmail');
+    if (CompanyEmail) {
       this.dashDataService.deviceDetails(CompanyEmail).subscribe(
         (device) => {
           this.dataSource2 = device.devices;
@@ -65,21 +71,44 @@ export class ReportComponent implements OnInit {
       );
     }
   }
+
+  applyFilter() {
+    if (this.device_uid.valid && this.start_date.valid && this.end_date.valid) {
+      // Format the start date using the DatePipe
+      const formattedStartDate = this.datePipe.transform(this.start_date.value, 'yyyy-MM-dd HH:mm:ss');
+      const formattedEndDate = this.datePipe.transform(this.end_date.value, 'yyyy-MM-dd HH:mm:ss');
+
+      const reportData = {
+        device_uid: this.device_uid.value,
+        start_time: formattedStartDate,
+        end_time: formattedEndDate,
+      }
+
+      this.dashDataService.reportData(reportData).subscribe(
+        (data) => {
+          this.dataSource.data = data.data;
+          this.dataSource.paginator = this.paginator;
+          console.log(this.dataSource2);
+        },
+        (error) => {
+
+        }
+      );
+    } else {
+      this.snackBar.open('Please select fields!', 'Dismiss', {
+        duration: 2000
+      });
+    }
+  }
 }
 
-export interface Person {
-  name: string;
-  age: number;
-  city: string;
-  Date: string;
+export interface Devices {
+  device_name: string;
+  pump1: string;
+  pump2: string;
+  Location: string;
+  device_latitude: number;
+  device_longitude: number;
 }
 
-const ELEMENT_DATA: Person[] = [
-  { name: 'Alice', age: 28, city: 'New York', Date: "10-20-2023" },
-  { name: 'Bob', age: 22, city: 'Los Angeles', Date: "10-20-2023" },
-  { name: 'Alice', age: 28, city: 'New York', Date: "10-20-2023" },
-  { name: 'Bob', age: 22, city: 'Los Angeles', Date: "10-20-2023" },
-  { name: 'Alice', age: 28, city: 'New York', Date: "10-20-2023" },
-  { name: 'Bob', age: 22, city: 'Los Angeles', Date: "10-20-2023" },
-  // Add more data entries as needed
-];
+const ELEMENT_DATA: Devices[] = [];
