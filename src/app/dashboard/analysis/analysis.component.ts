@@ -4,6 +4,7 @@ import HighchartsMore from 'highcharts/highcharts-more';
 import { AuthService } from '../../login/auth/auth.service';
 import { DashDataServiceService } from '../dash-data-service/dash-data-service.service';
 import { FormControl, Validators } from '@angular/forms';
+import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 
 HighchartsMore(Highcharts);
 
@@ -18,6 +19,11 @@ export class AnalysisComponent implements OnInit{
   device_uid = new FormControl('',[Validators.required]);
   CompanyEmail!: string;
   devices!: any[];
+  currentDate: Date = new Date();
+  startDate!: Date;
+  endDate: Date = this.currentDate;
+  start_date = new FormControl('', [Validators.required]);
+  end_date = new FormControl('', [Validators.required]);
 
   dataStatus = [
     { status: 'online', percentage: 25.5 },
@@ -32,6 +38,21 @@ export class AnalysisComponent implements OnInit{
     this.createBarChart();
     this.createLineChart();
     this.deviceList();
+  }
+
+  updateStartDate(event: MatDatepickerInputEvent<any, any>): void {
+    const selectedStartDate = event.value;
+    this.startDate = selectedStartDate;
+  }
+
+  updateEndDate(event: MatDatepickerInputEvent<any, any>): void {
+    const selectedEndDate = event.value;
+    if (!this.startDate || selectedEndDate >= this.startDate) {
+      this.endDate = selectedEndDate;
+    } else {
+      this.endDate = this.currentDate;
+      console.error('End date must be greater than or equal to the start date');
+    }
   }
 
   constructor(private authService: AuthService, public dashDataService : DashDataServiceService){

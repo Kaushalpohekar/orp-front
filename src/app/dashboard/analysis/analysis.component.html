@@ -31,18 +31,22 @@
 						<div class="col-xl-2 col-lg-2 col-md-5 col-sm-5 mb-1"  *ngIf="selectedValue === 'Custom'">
 						  <mat-form-field class="form-field" appearance="outline">
 							<mat-label>Start Date</mat-label>
-							<input matInput placeholder="Select Date" [matDatepicker]="startPicker" required>
+							<input matInput placeholder="Select Date" [matDatepicker]="startPicker" required  [formControl]="start_date"
+								[max]="currentDate" (dateChange)="updateStartDate($event)">
 							<mat-datepicker-toggle matPrefix [for]="startPicker"></mat-datepicker-toggle>
 							<mat-datepicker #startPicker></mat-datepicker>
+							<mat-error *ngIf = "start_date.invalid">Start Date is Required*</mat-error>
 						  </mat-form-field>
 						</div>
 					  
 						<div class="col-xl-2 col-lg-2 col-md-5 col-sm-5 mb-1" *ngIf="selectedValue === 'Custom'">
 						  <mat-form-field class="form-field" appearance="outline">
 							<mat-label>End Date</mat-label>
-							<input matInput placeholder="Select Date" [matDatepicker]="endPicker" required>
+							<input matInput placeholder="Select Date" [matDatepicker]="endPicker" required  [formControl]="end_date"
+								[min]="startDate" [max]="currentDate" (dateChange)="updateEndDate($event)">
 							<mat-datepicker-toggle matPrefix [for]="endPicker"></mat-datepicker-toggle>
 							<mat-datepicker #endPicker></mat-datepicker>
+							<mat-error *ngIf = "end_date.invalid ">End Date is Required*</mat-error>
 						  </mat-form-field>
 						</div>
 		            <div class="col-xl-1 col-lg-1 col-md-2 col-sm-2 mt-2 mb-1" *ngIf="selectedValue === 'Custom'">
