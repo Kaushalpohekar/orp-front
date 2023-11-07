@@ -20,7 +20,10 @@ export class DashDataServiceService {
   deviceDetails(CompanyEmail: string):Observable<any> {
     return this.http.get(`${this.API_URL}/getDeviceForUsers/${CompanyEmail}`);
   }
-
+  // userDetails(CompanyEmail: string):Observable<any> {
+  //   return this.http.get(`${this.API_URL}/getUsersForUsers/${CompanyEmail}`);
+  // }
+  
   reportData(reportData: any):Observable<any> {
     console.log(reportData);
     return this.http.post(`${this.API_URL}/getReportData`, reportData);

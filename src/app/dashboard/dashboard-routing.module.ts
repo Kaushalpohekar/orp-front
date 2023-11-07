@@ -4,12 +4,14 @@ import { AnalysisComponent } from './analysis/analysis.component';
 import { ReportComponent } from './report/report.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { SettingsComponent } from './settings/settings.component';
+import { ProfileComponent } from './profile/profile.component';
 
 const routes: Routes = [
   { path: 'overview', component: DashboardComponent },
   { path: 'analysis', component:AnalysisComponent },
   { path: 'report', component:ReportComponent},
   { path: 'settings', component:SettingsComponent},
+  { path: 'profile', component:ProfileComponent},
   { path: '', redirectTo: 'overview', pathMatch: 'full' }
 ];
 
