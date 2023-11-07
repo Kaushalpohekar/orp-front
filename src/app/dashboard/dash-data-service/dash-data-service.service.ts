@@ -25,7 +25,7 @@ export class DashDataServiceService {
     console.log(reportData);
     return this.http.post(`${this.API_URL}/getReportData`, reportData);
   }
-  
+
   addDevice(deviceData:any):Observable<any> {
     return this.http.post(`${this.API_URL}/add-Device`,deviceData);
   }
@@ -49,4 +49,16 @@ export class DashDataServiceService {
   editUser(UserId:string,userData:any):Observable<any> {
     return this.http.put(`${this.API_URL}/editUser/${UserId}`,userData);
   }
+
+  analyticsDataByCustomForPieChart(data: any): Observable<any> {
+    return this.http.post(`${this.API_URL}/get-Analytics-Data-OnTime-Total`, data);
+  }
+
+  analyticsDataByIntervalForPieChart(deviceID: string, interval: any): Observable<any> {
+    const data = { interval: interval }; // Replace with your actual data object
+
+    // Use the second argument to provide the data to be sent in the request
+    return this.http.post(`${this.API_URL}/getAnalyicsData/${deviceID}/intervals`, data);
+  }
+
 }

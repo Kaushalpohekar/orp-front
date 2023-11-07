@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import * as Highcharts from 'highcharts';
 import HighchartsMore from 'highcharts/highcharts-more';
+import { AuthService } from '../../login/auth/auth.service';
 import { DashDataServiceService } from '../dash-data-service/dash-data-service.service';
 import { FormControl, Validators } from '@angular/forms';
 
@@ -14,7 +15,9 @@ HighchartsMore(Highcharts);
 export class AnalysisComponent implements OnInit{
 
   selectedValue!: string;
-  device_uid = new FormControl('',[Validators.required])
+  device_uid = new FormControl('',[Validators.required]);
+  CompanyEmail!: string;
+  devices!: any[];
 
   dataStatus = [
     { status: 'online', percentage: 25.5 },
@@ -24,28 +27,37 @@ export class AnalysisComponent implements OnInit{
   dataSource2: any;
 
   ngOnInit() {
+    this.CompanyEmail = this.authService.getCompanyEmail() ?? '';
     this.createDonutChart(this.dataStatus);
     this.createBarChart();
     this.createLineChart();
     this.deviceList();
   }
 
-  constructor(public dashDataService : DashDataServiceService){
+  constructor(private authService: AuthService, public dashDataService : DashDataServiceService){
     
   }
 
   deviceList(){
-    const CompanyEmail = sessionStorage.getItem('companyEmail')
-    if(CompanyEmail){
-      this.dashDataService.deviceDetails(CompanyEmail).subscribe(
+    if(this.CompanyEmail){
+      this.dashDataService.deviceDetails(this.CompanyEmail).subscribe(
         (device) => {
-          this.dataSource2 = device.devices;
+          this.devices = device.devices;
         },
         (error) => {
-          console.log("Error while fetching the device List");
+          console.log("Error while fetchingg tthee device List");
         }
       );
     }
+  }
+
+  applyFilterInterval(interval: string){
+    if(this.device_uid.valid && interval){
+      const device_uid = this.device_uid.value;
+      console.log("Selected Value", interval, device_uid);
+    } else {
+      console.log("Select device_uid Firrst");
+    } 
   }
 
   createDonutChart(dataStatus: any) {
