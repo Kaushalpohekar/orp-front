@@ -7,50 +7,51 @@
         </div>
         <div class="row pt-2">
 	        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-			    	<div class="row">
-			    		<div class="col-xl-2 col-lg-2 col-md-4 col-sm-12 mb-1">
-			                <mat-form-field appearance="outline" class="form-field">
-			                    <mat-label>Select Device</mat-label>
-			                    <mat-select required [formControl]="device_uid">
-			                        <mat-option *ngFor="let device of dataSource2" [value]="device.device_uid">{{device.device_name}}</mat-option>
-			                    </mat-select>
-			                </mat-form-field>
-			            </div>
-			    		<div class="col-xl-5 col-lg-6 col-md-8 col-sm-12" style="margin-bottom: 27px;">
-							<mat-button-toggle-group name="fontStyle" class="button-group" aria-label="Font Style" [(ngModel)]="selectedValue">
-							  <mat-button-toggle class="button-group" value="Live">Live</mat-button-toggle>
-							  <mat-button-toggle class="button-group" value="Min">Min</mat-button-toggle>
-							  <mat-button-toggle class="button-group" value="Hour">Hour</mat-button-toggle>
-							  <mat-button-toggle class="button-group" value="Day">Day</mat-button-toggle>
-							  <mat-button-toggle class="button-group" value="Week">Week</mat-button-toggle>
-							  <mat-button-toggle class="button-group" value="Month">Month</mat-button-toggle>
-							  <mat-button-toggle class="button-group" value="Custom">Custom</mat-button-toggle>
-							</mat-button-toggle-group>
-						  </div>
-							<div class="col-xl-2 col-lg-2 col-md-5 col-sm-5 mb-1"  *ngIf="selectedValue === 'Custom'">
-							  <mat-form-field class="form-field" appearance="outline">
-								<mat-label>Start Date</mat-label>
-								<input matInput placeholder="Select Date" [matDatepicker]="startPicker" required>
-								<mat-datepicker-toggle matPrefix [for]="startPicker"></mat-datepicker-toggle>
-								<mat-datepicker #startPicker></mat-datepicker>
-							  </mat-form-field>
-							</div>
-						  
-							<div class="col-xl-2 col-lg-2 col-md-5 col-sm-5 mb-1" *ngIf="selectedValue === 'Custom'">
-							  <mat-form-field class="form-field" appearance="outline">
-								<mat-label>End Date</mat-label>
-								<input matInput placeholder="Select Date" [matDatepicker]="endPicker" required>
-								<mat-datepicker-toggle matPrefix [for]="endPicker"></mat-datepicker-toggle>
-								<mat-datepicker #endPicker></mat-datepicker>
-							  </mat-form-field>
-							</div>
-			            <div class="col-xl-1 col-lg-1 col-md-2 col-sm-2 mt-2 mb-1" *ngIf="selectedValue === 'Custom'">
-			                <div class="">
-			                	<button mat-raised-button style="background-color: #a6a6a6;color: #fff;">Apply Filter</button>
-			                </div>
-			            </div>
-			    	</div>
-			    </div>
+		    	<div class="row">
+		    		<div class="col-xl-2 col-lg-2 col-md-4 col-sm-12 mb-1">
+		                <mat-form-field appearance="outline" class="form-field">
+		                    <mat-label>Select Device</mat-label>
+		                    <mat-select required [formControl]="device_uid">
+		                        <mat-option *ngFor="let device of devices" [value]="device.device_uid">{{device.device_name}}</mat-option>
+		                        <mat-error *ngIf="device_uid.invalid">Required*</mat-error>
+		                    </mat-select> 
+		                </mat-form-field>
+		            </div>
+		    		<div class="col-xl-5 col-lg-6 col-md-8 col-sm-12" style="margin-bottom: 27px;">
+						<mat-button-toggle-group name="fontStyle" class="button-group" aria-label="Font Style" [(ngModel)]="selectedValue">
+						  <mat-button-toggle class="button-group" value="Live" (click) = "applyFilterInterval('Live')">Live</mat-button-toggle>
+						  <mat-button-toggle class="button-group" value="Min" (click) = "applyFilterInterval('Min')">Min</mat-button-toggle>
+						  <mat-button-toggle class="button-group" value="Hour" (click) = "applyFilterInterval('Hour')">Hour</mat-button-toggle>
+						  <mat-button-toggle class="button-group" value="Day" (click) = "applyFilterInterval('Day')">Day</mat-button-toggle>
+						  <mat-button-toggle class="button-group" value="Week" (click) = "applyFilterInterval('Week')">Week</mat-button-toggle>
+						  <mat-button-toggle class="button-group" value="Month" (click) = "applyFilterInterval('Month')">Month</mat-button-toggle>
+						  <mat-button-toggle class="button-group" value="Custom">Custom</mat-button-toggle>
+						</mat-button-toggle-group>
+					  </div>
+						<div class="col-xl-2 col-lg-2 col-md-5 col-sm-5 mb-1"  *ngIf="selectedValue === 'Custom'">
+						  <mat-form-field class="form-field" appearance="outline">
+							<mat-label>Start Date</mat-label>
+							<input matInput placeholder="Select Date" [matDatepicker]="startPicker" required>
+							<mat-datepicker-toggle matPrefix [for]="startPicker"></mat-datepicker-toggle>
+							<mat-datepicker #startPicker></mat-datepicker>
+						  </mat-form-field>
+						</div>
+					  
+						<div class="col-xl-2 col-lg-2 col-md-5 col-sm-5 mb-1" *ngIf="selectedValue === 'Custom'">
+						  <mat-form-field class="form-field" appearance="outline">
+							<mat-label>End Date</mat-label>
+							<input matInput placeholder="Select Date" [matDatepicker]="endPicker" required>
+							<mat-datepicker-toggle matPrefix [for]="endPicker"></mat-datepicker-toggle>
+							<mat-datepicker #endPicker></mat-datepicker>
+						  </mat-form-field>
+						</div>
+		            <div class="col-xl-1 col-lg-1 col-md-2 col-sm-2 mt-2 mb-1" *ngIf="selectedValue === 'Custom'">
+		                <div class="">
+		                	<button mat-raised-button style="background-color: #a6a6a6;color: #fff;">Apply Filter</button>
+		                </div>
+		            </div>
+		    	</div>
+		    </div>
 	    	<div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 mb-3">
 				<mat-card>
 					<mat-card-content>
