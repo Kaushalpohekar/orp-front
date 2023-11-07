@@ -52,6 +52,13 @@ export class AuthService {
     return sessionStorage.getItem('companyEmail');
   }
 
+  setCompanyName(companyName: string){
+    sessionStorage.setItem('companyName', companyName);
+  }
+
+  getCompanyName(): string | null {
+    return sessionStorage.getItem('companyName');
+  }
 
   getUserDetails(): void {
     const token = this.getToken();
@@ -68,6 +75,9 @@ export class AuthService {
 
             const companyEmail = dataSource.CompanyEmail;
             this.setCompanyEmail(companyEmail);
+
+            const companyName = dataSource.CompanyName;
+            this.setCompanyName(companyName);
           },
           (error: any) => {
             console.error(error);
@@ -86,6 +96,4 @@ export class AuthService {
     this.isLoggedIn();
     this.router.navigate(['/login/login']);
   }
-  
-  
 }

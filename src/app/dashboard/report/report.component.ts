@@ -18,7 +18,8 @@ export class ReportComponent implements OnInit {
   displayedColumns: string[] = ['Device', 'Date', 'Time', 'ORP', 'Pump1', 'Pump2'];
   dataSource = new MatTableDataSource<Devices>(ELEMENT_DATA);
   panelOpenState = false;
-
+  first_device!:string;
+  
   constructor(private snackBar: MatSnackBar, private authService: AuthService, private dashDataService: DashDataServiceService, private datePipe: DatePipe) {} // Inject DatePipe
 
   device_uid = new FormControl('', [Validators.required]);
@@ -35,6 +36,7 @@ export class ReportComponent implements OnInit {
 
   ngOnInit() {
     this.deviceList();
+
   }
 
   updateStartDate(event: MatDatepickerInputEvent<any, any>): void {
@@ -42,18 +44,12 @@ export class ReportComponent implements OnInit {
     this.startDate = selectedStartDate;
   }
 
-  // Function to update the end date
   updateEndDate(event: MatDatepickerInputEvent<any, any>): void {
     const selectedEndDate = event.value;
-
-    // Check if the selected end date is greater than or equal to the start date
     if (!this.startDate || selectedEndDate >= this.startDate) {
-      // Update the end date value
       this.endDate = selectedEndDate;
     } else {
-      // Reset the end date to the current date or handle the case where the selected end date is before the start date
       this.endDate = this.currentDate;
-      // You can also show an error message to the user
       console.error('End date must be greater than or equal to the start date');
     }
   }
@@ -64,6 +60,28 @@ export class ReportComponent implements OnInit {
       this.dashDataService.deviceDetails(CompanyEmail).subscribe(
         (device) => {
           this.dataSource2 = device.devices;
+          this.first_device = this.dataSource2[0].device_uid;
+          const deviceId = sessionStorage.getItem('defaultDevice');
+          if(deviceId === null){
+            sessionStorage.setItem('defaultDevice',this.first_device);
+            this.setDefaultValue();
+          }else{
+            const reportData = {
+              device_uid: sessionStorage.getItem('defaultDevice'),
+              start_time: sessionStorage.getItem('start_date'),
+              end_time: sessionStorage.getItem('end_date'),
+            }
+        
+            this.dashDataService.reportData(reportData).subscribe(
+              (data) => {
+                this.dataSource.data = data.data;
+                this.dataSource.paginator = this.paginator;
+              },
+              (error) => {
+        
+              }
+            );
+          }       
         },
         (error) => {
           console.log("Error while fetching the device List");
@@ -72,17 +90,50 @@ export class ReportComponent implements OnInit {
     }
   }
 
+  setDefaultValue(){
+    const previousDate = new Date(this.currentDate);
+      previousDate.setDate(this.currentDate.getDate() - 1);
+      const formattedStartDate = this.datePipe.transform(previousDate, 'yyyy-MM-dd HH:mm:ss')??'';
+    sessionStorage.setItem('start_date',formattedStartDate)
+
+      const formattedEndDate = this.datePipe.transform(this.currentDate, 'yyyy-MM-dd HH:mm:ss')??'';
+    sessionStorage.setItem('end_date',formattedEndDate)
+
+    const reportData = {
+      device_uid: sessionStorage.getItem('defaultDevice'),
+      start_time: sessionStorage.getItem('start_date'),
+      end_time: sessionStorage.getItem('end_date'),
+    }
+
+    this.dashDataService.reportData(reportData).subscribe(
+      (data) => {
+        this.dataSource.data = data.data;
+        this.dataSource.paginator = this.paginator;
+      },
+      (error) => {
+
+      }
+    );
+  }
+
   applyFilter() {
     if (this.device_uid.valid && this.start_date.valid && this.end_date.valid) {
-      // Format the start date using the DatePipe
-      const formattedStartDate = this.datePipe.transform(this.start_date.value, 'yyyy-MM-dd HH:mm:ss');
-      const formattedEndDate = this.datePipe.transform(this.end_date.value, 'yyyy-MM-dd HH:mm:ss');
+      const formattedStartDate = this.datePipe.transform(this.start_date.value, 'yyyy-MM-dd HH:mm:ss')??'';
+      const formattedEndDate = this.datePipe.transform(this.end_date.value, 'yyyy-MM-dd HH:mm:ss')??'';
+
+      
+      const new_uid= this.device_uid.value??'';
+      sessionStorage.setItem('defaultDevice',new_uid);
+      sessionStorage.setItem('start_date',formattedStartDate)
+      sessionStorage.setItem('end_date',formattedEndDate)
 
       const reportData = {
-        device_uid: this.device_uid.value,
-        start_time: formattedStartDate,
-        end_time: formattedEndDate,
+        device_uid: sessionStorage.getItem('defaultDevice'),
+        start_time: sessionStorage.getItem('start_date'),
+        end_time: sessionStorage.getItem('end_date'),
       }
+
+      console.log(reportData);
 
       this.dashDataService.reportData(reportData).subscribe(
         (data) => {

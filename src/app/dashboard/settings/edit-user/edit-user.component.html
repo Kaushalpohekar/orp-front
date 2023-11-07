@@ -33,7 +33,14 @@
 		        <mat-error *ngIf="ContactNo.invalid">Contact No is Required.</mat-error>
 		    </mat-form-field>
     	</div>
-    	<div class="col-md-6 mb-2">
+		<div class="col-md-6 mb-2">
+    		<mat-form-field appearance="outline" class="from-field">
+		        <mat-label>Location</mat-label>
+		        <input matInput [formControl]="Location" [(ngModel)]="data.Location" required>
+		        <mat-error *ngIf="ContactNo.invalid">Location is Required.</mat-error>
+		    </mat-form-field>
+    	</div>
+    	<div class="col-md-12 mb-2">
     		<mat-form-field appearance="outline" class="from-field">
 	            <mat-label>User Type</mat-label>
 	            <mat-select [formControl]="UserType" [(ngModel)]="data.UserType">

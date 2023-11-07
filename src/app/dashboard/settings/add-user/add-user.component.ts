@@ -17,6 +17,7 @@ export class AddUserComponent implements OnInit{
   PersonalEmail = new FormControl('', [Validators.required, Validators.email]);
   ContactNo = new FormControl('', [Validators.required]);
   UserType = new FormControl('', [Validators.required]);
+  Location = new FormControl('', [Validators.required]);
   userId!: string | null;
 
   @HostListener('window:resize')
@@ -59,7 +60,8 @@ export class AddUserComponent implements OnInit{
   onSave(){
     if(this.FirstName.valid && this.LastName.valid && this.PersonalEmail.valid && this.ContactNo.valid && this.UserType.valid){
       
-      const Email=sessionStorage.getItem('companyEmail');
+      const CEmail=sessionStorage.getItem('companyEmail');
+      const CName=sessionStorage.getItem('companyName');
 
       const userData={
         userName:this.PersonalEmail.value, 
@@ -68,7 +70,9 @@ export class AddUserComponent implements OnInit{
         lastName:this.LastName.value, 
         contactNo:this.ContactNo.value, 
         userType:this.UserType.value, 
-        companyEmail:Email
+        location:this.Location.value,
+        companyEmail:CEmail,
+        companyName:CName,
       }
 
       this.DashDataService.addUser(userData).subscribe(

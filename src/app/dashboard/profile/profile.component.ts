@@ -3,6 +3,7 @@ import { FormControl, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DashDataServiceService } from '../dash-data-service/dash-data-service.service';
 import { AuthService } from 'src/app/login/auth/auth.service';
+import { DataSource } from '@angular/cdk/collections';
 
 @Component({
   selector: 'app-profile',
@@ -30,6 +31,7 @@ export class ProfileComponent implements OnInit{
   cancelCompany: boolean = false;
   cancelPersonal: boolean = false;
   cancelPassword: boolean = false;
+  dataSource:any;
 
   ngOnInit() {
     this.getUserDetail();
@@ -65,7 +67,20 @@ export class ProfileComponent implements OnInit{
     console.log(UserId);
 
     if(UserId){
-      this.dashdataService
+      this.dashdataService.getUserData(UserId).subscribe(
+        (user) => {
+          this.dataSource = user.getUserById;
+          console.log(this.dataSource);
+          this.fname = this.dataSource[0].FirstName;
+          this.lname = this.dataSource[0].LastName;
+          this.companyEmail = this.dataSource[0].CompanyEmail;
+          this.personalEmail = this.dataSource[0].UserName;
+          this.designation = this.dataSource[0].UserType;
+          this.contactNo = this.dataSource[0].Contact;
+          this.location = this.dataSource[0].Location;
+          this.companyName = this.dataSource[0].CompanyName; 
+        }
+      )
     }
   }
 }

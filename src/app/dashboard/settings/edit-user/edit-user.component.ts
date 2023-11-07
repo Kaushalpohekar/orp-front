@@ -17,6 +17,7 @@ export class EditUserComponent  implements OnInit{
   PersonalEmail = new FormControl('', [Validators.required, Validators.email]);
   ContactNo = new FormControl('', [Validators.required]);
   UserType = new FormControl('', [Validators.required]);
+  Location = new FormControl('', [Validators.required]);
   userId!: string;
   data:any;
 
@@ -62,7 +63,7 @@ export class EditUserComponent  implements OnInit{
   onSave(){
     if(this.FirstName.valid && this.LastName.valid && this.PersonalEmail.valid && this.ContactNo.valid && this.UserType.valid){
 
-      const Email=sessionStorage.getItem('companyEmail')
+      const CEmail=sessionStorage.getItem('companyEmail')
 
       const userData={
         userName:this.PersonalEmail.value, 
@@ -70,7 +71,8 @@ export class EditUserComponent  implements OnInit{
         lastName:this.LastName.value, 
         contact:this.ContactNo.value, 
         userType:this.UserType.value,
-        companyEmail:Email
+        location:this.Location.value,
+        companyEmail:CEmail,
       }
 
       this.DashDataService.editUser(this.userId,userData).subscribe(
