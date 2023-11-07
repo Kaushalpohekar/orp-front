@@ -14,6 +14,12 @@ export const navbarData: INavbarData[] = [
         UserType:'Admin',
     },
     {
+        routeLink: 'profile',
+        icon: 'account_circle',
+        label: 'Profile',
+        UserType:'Admin',
+    },
+    {
         routeLink: 'settings',
         icon: 'settings',
         label: 'Settings',

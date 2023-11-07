@@ -21,6 +21,10 @@ export class DashDataServiceService {
     return this.http.get(`${this.API_URL}/getDeviceForUsers/${CompanyEmail}`);
   }
 
+  // userDetails(CompanyEmail: string):Observable<any> {
+  //   return this.http.get(`${this.API_URL}/getUsersForUsers/${CompanyEmail}`);
+  // }
+
   addDevice(deviceData:any):Observable<any> {
     return this.http.post(`${this.API_URL}/add-Device`,deviceData);
   }
