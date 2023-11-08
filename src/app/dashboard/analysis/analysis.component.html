@@ -20,11 +20,11 @@
 		    		<div class="col-xl-5 col-lg-6 col-md-8 col-sm-12" style="margin-bottom: 27px;">
 						<mat-button-toggle-group name="fontStyle" class="button-group" aria-label="Font Style" [(ngModel)]="selectedValue">
 						  <mat-button-toggle class="button-group" value="Live" (click) = "applyFilterInterval('Live')">Live</mat-button-toggle>
-						  <mat-button-toggle class="button-group" value="Min" (click) = "applyFilterInterval('Min')">Min</mat-button-toggle>
-						  <mat-button-toggle class="button-group" value="Hour" (click) = "applyFilterInterval('Hour')">Hour</mat-button-toggle>
-						  <mat-button-toggle class="button-group" value="Day" (click) = "applyFilterInterval('Day')">Day</mat-button-toggle>
-						  <mat-button-toggle class="button-group" value="Week" (click) = "applyFilterInterval('Week')">Week</mat-button-toggle>
-						  <mat-button-toggle class="button-group" value="Month" (click) = "applyFilterInterval('Month')">Month</mat-button-toggle>
+						  <mat-button-toggle class="button-group" value="Min" (click) = "applyFilterInterval('min')">Min</mat-button-toggle>
+						  <mat-button-toggle class="button-group" value="Hour" (click) = "applyFilterInterval('hour')">Hour</mat-button-toggle>
+						  <mat-button-toggle class="button-group" value="Day" (click) = "applyFilterInterval('day')">Day</mat-button-toggle>
+						  <mat-button-toggle class="button-group" value="Week" (click) = "applyFilterInterval('week')">Week</mat-button-toggle>
+						  <mat-button-toggle class="button-group" value="Month" (click) = "applyFilterInterval('month')">Month</mat-button-toggle>
 						  <mat-button-toggle class="button-group" value="Custom">Custom</mat-button-toggle>
 						</mat-button-toggle-group>
 					  </div>
@@ -49,9 +49,11 @@
 							<mat-error *ngIf = "end_date.invalid ">End Date is Required*</mat-error>
 						  </mat-form-field>
 						</div>
-		            <div class="col-xl-1 col-lg-1 col-md-2 col-sm-2 mt-2 mb-1" *ngIf="selectedValue === 'Custom'">
+		            <div class="col-xl-1 col-lg-1 col-md-2 col-sm-2 mb-1" *ngIf="selectedValue === 'Custom'">
 		                <div class="">
-		                	<button mat-raised-button style="background-color: #a6a6a6;color: #fff;">Apply Filter</button>
+		                	<button mat-fab style="background-color: #a6a6a6;color: #fff;" (click)="applyCustomFilter()">
+					          <mat-icon>filter_list</mat-icon>
+					        </button>
 		                </div>
 		            </div>
 		    	</div>

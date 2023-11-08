@@ -55,14 +55,20 @@ export class DashDataServiceService {
   }
 
   analyticsDataByCustomForPieChart(data: any): Observable<any> {
-    return this.http.post(`${this.API_URL}/get-Analytics-Data-OnTime-Total`, data);
+    return this.http.post(`${this.API_URL}/get-Analytics-Data-OnTime-Total-customs`, data);
   }
 
-  analyticsDataByIntervalForPieChart(deviceID: string, interval: any): Observable<any> {
-    const data = { interval: interval }; // Replace with your actual data object
-
-    // Use the second argument to provide the data to be sent in the request
-    return this.http.post(`${this.API_URL}/getAnalyicsData/${deviceID}/intervals`, data);
+  analyticsDataByIntervalForPieChart(deviceID: string | null, interval: any): Observable<any> {
+    // Use the second argument to provide the query parameters
+    return this.http.get(`${this.API_URL}/get-Analytics-Data-OnTime-Total-interval/${deviceID}?interval=${interval}`);
   }
 
+  analyticsDataByCustomForLineChart(data: any): Observable<any> {
+    return this.http.post(`${this.API_URL}/get-Analytics-Data-Line-Total-customs`, data);
+  }
+
+  analyticsDataByIntervalForLineChart(deviceID: string | null, interval: any): Observable<any> {
+    // Use the second argument to provide the query parameters
+    return this.http.get(`${this.API_URL}/get-Analytics-Data-Line-Total-interval/${deviceID}?interval=${interval}`);
+  }
 }

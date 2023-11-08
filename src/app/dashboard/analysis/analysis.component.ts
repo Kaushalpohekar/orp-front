@@ -5,6 +5,7 @@ import { AuthService } from '../../login/auth/auth.service';
 import { DashDataServiceService } from '../dash-data-service/dash-data-service.service';
 import { FormControl, Validators } from '@angular/forms';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import { DatePipe } from '@angular/common';
 
 HighchartsMore(Highcharts);
 
@@ -55,7 +56,7 @@ export class AnalysisComponent implements OnInit{
     }
   }
 
-  constructor(private authService: AuthService, public dashDataService : DashDataServiceService){
+  constructor(private authService: AuthService, public dashDataService : DashDataServiceService, private datePipe: DatePipe){
     
   }
 
@@ -76,9 +77,60 @@ export class AnalysisComponent implements OnInit{
     if(this.device_uid.valid && interval){
       const device_uid = this.device_uid.value;
       console.log("Selected Value", interval, device_uid);
+      this.dashDataService.analyticsDataByIntervalForPieChart(device_uid, interval).subscribe(
+        (pieData) => {
+          console.log(pieData);
+          this.dashDataService.analyticsDataByIntervalForLineChart(device_uid, interval).subscribe(
+            (lineData) => {
+              console.log(lineData);     
+            },
+            (error) => {
+              console.log("Api is nt Working");
+            }
+          );
+        },
+        (error) => {
+          console.log("Api is nt Working");
+        }
+      );
     } else {
-      console.log("Select device_uid Firrst");
+      console.log("Select device_uid First");
     } 
+  }
+
+  applyCustomFilter(){
+    if(this.start_date.valid && this.end_date.valid && this.device_uid.valid){
+
+
+      const formattedStartDate = this.datePipe.transform(this.start_date.value, 'yyyy-MM-dd HH:mm:ss')??'';
+      const formattedEndDate = this.datePipe.transform(this.end_date.value, 'yyyy-MM-dd HH:mm:ss')??'';
+
+
+      const analyticsData ={
+        device_uid : this.device_uid.value,
+        start_time : formattedStartDate,
+        end_time : formattedEndDate
+      }
+      this.dashDataService.analyticsDataByCustomForPieChart(analyticsData).subscribe(
+        (pieData) => {
+          console.log(pieData);
+          this.dashDataService.analyticsDataByCustomForLineChart(analyticsData).subscribe(
+            (lineData) => {
+              console.log(lineData);
+            },
+            (error) => {
+              console.log("Api is nt Working");
+            }
+          );
+        },
+        (error) => {
+          console.log("Api is nt Working");
+        }
+      );
+      console.log(analyticsData);
+    } else {
+      console.log("select dates first");
+    }
   }
 
   createDonutChart(dataStatus: any) {
