@@ -6,8 +6,13 @@ import { DashDataServiceService } from '../dash-data-service/dash-data-service.s
 import { FormControl, Validators } from '@angular/forms';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { DatePipe } from '@angular/common'; // Import DatePipe
+import { DatePipe } from '@angular/common';
 import { MatPaginator } from '@angular/material/paginator';
+import * as Papa from 'papaparse';
+import * as XLSX from 'xlsx';
+import * as FileSaver from 'file-saver';
+import 'jspdf-autotable';
+import { Subscription, interval, take } from 'rxjs';
 
 @Component({
   selector: 'app-report',
@@ -19,8 +24,16 @@ export class ReportComponent implements OnInit {
   dataSource = new MatTableDataSource<Devices>(ELEMENT_DATA);
   panelOpenState = false;
   first_device!:string;
+  data:any
+  intervalSubscription: Subscription | undefined;
   
-  constructor(private snackBar: MatSnackBar, private authService: AuthService, private dashDataService: DashDataServiceService, private datePipe: DatePipe) {} // Inject DatePipe
+  constructor(private snackBar: MatSnackBar, private authService: AuthService, private dashDataService: DashDataServiceService, private datePipe: DatePipe) {} 
+
+  
+  ngOnInit() {
+    this.deviceList();
+    this.startInterval();
+  }
 
   device_uid = new FormControl('', [Validators.required]);
   start_date = new FormControl('', [Validators.required]);
@@ -29,6 +42,8 @@ export class ReportComponent implements OnInit {
   id!: string|null;
   start!: string|null;
   end!: string|null;
+  deviceStatus!: string;
+  actualStatus!: string|null;
 
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
@@ -38,17 +53,76 @@ export class ReportComponent implements OnInit {
   startDate!: Date;
   endDate: Date = this.currentDate;
 
-  ngOnInit() {
-    this.deviceList();
-    this.defaultData();
+  ngOnDestroy() {
+    this.stopInterval();
   }
 
-  defaultData(){
+  startInterval() {
+    this.intervalSubscription = interval(100)
+      .pipe(take(Infinity))
+      .subscribe(() => {
+        this.defaultData();
+      });
+  }
+
+  stopInterval() {
+    if (this.intervalSubscription) {
+      this.intervalSubscription.unsubscribe();
+    }
+  }
+  
+  defaultData(){    
     this.id = sessionStorage.getItem('defaultDevice');
     const s = sessionStorage.getItem('start_date');
     this.start = this.datePipe.transform(s, 'yyyy-MM-dd')??'';
     const e = sessionStorage.getItem('end_date');
     this.end = this.datePipe.transform(e, 'yyyy-MM-dd')??'';
+    this.actualStatus= sessionStorage.getItem('DeviceStatus');
+  }
+
+  downloadCSV() {
+    const csv = Papa.unparse(this.data);
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', 'report_data.csv');
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  }
+
+  downloadExcel() {
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(this.data);
+    const workbook: XLSX.WorkBook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
+
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+
+    this.saveAsExcelFile(excelBuffer, 'report_data.xlsx');
+  }
+
+  private saveAsExcelFile(buffer: any, fileName: string): void {
+    const data: Blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
+    FileSaver.saveAs(data, fileName);
+  }
+
+  downloadPDF() {
+    const jsPDF = require('jspdf');
+
+    const columns = Object.keys(this.data[0]);
+    const rows = this.data.map((item: Record<string, string | number>) => Object.values(item));
+
+    const doc = new jsPDF.default(); // Use .default to access the class constructor
+
+    doc.autoTable({
+      head: [columns],
+      body: rows,
+    });
+
+    doc.save('report_data.pdf');
   }
 
   updateStartDate(event: MatDatepickerInputEvent<any, any>): void {
@@ -66,6 +140,10 @@ export class ReportComponent implements OnInit {
     }
   }
 
+  select(deviceStat:any){
+    this.deviceStatus=deviceStat.status;
+  }
+
   deviceList() {
     const CompanyEmail = sessionStorage.getItem('companyEmail');
     if (CompanyEmail) {
@@ -73,9 +151,11 @@ export class ReportComponent implements OnInit {
         (device) => {
           this.dataSource2 = device.devices;
           this.first_device = this.dataSource2[0].device_uid;
+          const first_status = this.dataSource2[0].status;
           const deviceId = sessionStorage.getItem('defaultDevice');
           if(deviceId === null){
             sessionStorage.setItem('defaultDevice',this.first_device);
+            sessionStorage.setItem('DeviceStatus',first_status);
             this.setDefaultValue();
           }else{
             const reportData = {
@@ -87,6 +167,7 @@ export class ReportComponent implements OnInit {
             this.dashDataService.reportData(reportData).subscribe(
               (data) => {
                 this.dataSource.data = data.data;
+                this.data = data.data;
                 this.dataSource.paginator = this.paginator;
               },
               (error) => {
@@ -120,6 +201,7 @@ export class ReportComponent implements OnInit {
     this.dashDataService.reportData(reportData).subscribe(
       (data) => {
         this.dataSource.data = data.data;
+        this.data = data.data;
         this.dataSource.paginator = this.paginator;
       },
       (error) => {
@@ -136,8 +218,9 @@ export class ReportComponent implements OnInit {
       
       const new_uid= this.device_uid.value??'';
       sessionStorage.setItem('defaultDevice',new_uid);
-      sessionStorage.setItem('start_date',formattedStartDate)
-      sessionStorage.setItem('end_date',formattedEndDate)
+      sessionStorage.setItem('start_date',formattedStartDate);
+      sessionStorage.setItem('end_date',formattedEndDate);
+      sessionStorage.setItem('DeviceStatus',this.deviceStatus);
 
       const reportData = {
         device_uid: sessionStorage.getItem('defaultDevice'),
@@ -148,6 +231,7 @@ export class ReportComponent implements OnInit {
       this.dashDataService.reportData(reportData).subscribe(
         (data) => {
           this.dataSource.data = data.data;
+          this.data = data.data;
           this.dataSource.paginator = this.paginator;
         },
         (error) => {

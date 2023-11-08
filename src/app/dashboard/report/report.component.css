@@ -25,3 +25,17 @@
     background-color: white;
     z-index: 2;
 }
+
+.online {
+	background: linear-gradient(to right, #3c9e55, #00FFFF);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	background-clip: text;
+}
+
+.offline {
+  background: linear-gradient(to right, red, #A9A9A9);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	background-clip: text;
+}

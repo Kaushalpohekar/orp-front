@@ -26,7 +26,6 @@ export class DashDataServiceService {
   }
 
   reportData(reportData: any):Observable<any> {
-    console.log(reportData);
     return this.http.post(`${this.API_URL}/getReportData`, reportData);
   }
 
