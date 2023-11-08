@@ -20,11 +20,7 @@ export class SettingsComponent implements OnInit{
   CompanyEmail!: string;
   UserId!: string | null;
   totalUsers: number = 0;
-  totalOnlineUsers: number = 0;
-  totalOfflineUsers: number = 0;
   totalDevices: number = 0;
-  totalActiveDevices: number = 0;
-  totalInactiveDevices: number = 0;
   dataSource: any;
   dataSource2: any;
   displayedColumns: string[] = ['Name', 'UserName', 'Contact', 'Action'];
@@ -41,6 +37,28 @@ export class SettingsComponent implements OnInit{
 
   ngOnInit(): void{
     this.CompanyEmail = this.authService.getCompanyEmail() ?? '';
+    this.startInterval();
+  }
+
+  ngOnDestroy() {
+    this.stopInterval();
+  }
+
+  startInterval() {
+    this.intervalSubscription = interval(5000)
+      .pipe(take(Infinity))
+      .subscribe(() => {
+        this.fetchData();
+      });
+  }
+
+  stopInterval() {
+    if (this.intervalSubscription) {
+      this.intervalSubscription.unsubscribe();
+    }
+  }
+
+  fetchData() {
     this.deviceList();
     this.userList();
   }
@@ -50,6 +68,7 @@ export class SettingsComponent implements OnInit{
       this.dashDataService.userDetails(this.CompanyEmail).subscribe(
         (user) => {
           this.dataSource = user.users;
+          this.totalUsers = this.dataSource.length;
         },
         (error) => {
           console.log("Error while fetchingg tthee device List");
@@ -108,6 +127,7 @@ export class SettingsComponent implements OnInit{
             device_longitude:d.device_longitute,
             entry_id:d.entry_id  
           }));
+          this.totalDevices = this.dataSource2.length;
         },
         (error) => {
           console.log("Error while fetching the device List");

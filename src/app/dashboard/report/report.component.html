@@ -1,22 +1,32 @@
 <div class="content">
     <div class="container-fluid">
-        <div class="row pt-2 mb-2" style="height: 5vh;">
+        <div class="row pt-2 mb-1 mt-1" style="height: 5vh;">
             <div class="col-12">
                 <div class="title">EcoTrade Reports</div>
             </div>
         </div>
-        <div class="row pt-2">
+        <div class="row pt-1">
         	<div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-2">
         		<mat-card>
         			<mat-card-content>
 		        		<div class="container-fluid">
 					    	<div class="row">
+								<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
+									<h2>Device Status : 
+										<div *ngIf="actualStatus === '0'" class="online">
+											Online
+										</div>
+										<div *ngIf="actualStatus === '1'" class="offline">
+											Offline
+										</div>
+									</h2>
+								</div>
 					    		<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
 					    			<div>Download Report</div>
 					        		<mat-button-toggle-group name="fontStyle" class="button-group" aria-label="Font Style">
-										<mat-button-toggle class="button-group" value="bold">CSV</mat-button-toggle>
-										<mat-button-toggle class="button-group" value="italic">Excel</mat-button-toggle>
-										<mat-button-toggle class="button-group" value="underline">Print</mat-button-toggle>
+										<mat-button-toggle class="button-group" value="bold" (click)="downloadCSV()">CSV</mat-button-toggle>
+										<mat-button-toggle class="button-group" value="italic" (click)="downloadExcel()">Excel</mat-button-toggle>
+										<mat-button-toggle class="button-group" value="underline" (click)="downloadPDF()">Print</mat-button-toggle>
 									</mat-button-toggle-group>
 					        	</div>
 
@@ -26,8 +36,8 @@
 					    		<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
 					                <mat-form-field appearance="outline" class="form-field">
 					                    <mat-label>Select Device</mat-label>
-					                    <mat-select required [formControl]="device_uid">
-											<mat-option *ngFor="let device of dataSource2" [value]="device.device_uid">{{device.device_name}}</mat-option>
+					                    <mat-select required [formControl]="device_uid" [value]="id">
+											<mat-option *ngFor="let device of dataSource2" [value]="device.device_uid" (click)="select(device)">{{device.device_name}}</mat-option>
 										</mat-select>
 										<mat-error *ngIf = "device_uid.invalid">Device Name is Required*</mat-error>
 					                </mat-form-field>
@@ -35,7 +45,7 @@
 					            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
 					                <mat-form-field class="form-field" appearance="outline">
 										<mat-label>Start Date</mat-label>
-										<input matInput placeholder="Select Date" [matDatepicker]="startPicker" required  [formControl]="start_date"
+										<input matInput placeholder="Select Date" [matDatepicker]="startPicker" required  [ngModel]="start" [formControl]="start_date"
 										[max]="currentDate" (dateChange)="updateStartDate($event)">
 										<mat-datepicker-toggle matPrefix [for]="startPicker"></mat-datepicker-toggle>
 										<mat-datepicker #startPicker></mat-datepicker>
@@ -45,7 +55,7 @@
 					            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
 					                <mat-form-field class="form-field" appearance="outline">
 										<mat-label>End Date</mat-label>
-										<input matInput placeholder="Select Date" [matDatepicker]="endPicker" required  [formControl]="end_date"
+										<input matInput placeholder="Select Date" [matDatepicker]="endPicker" required  [ngModel]="end" [formControl]="end_date"
 										[min]="startDate" [max]="currentDate" (dateChange)="updateEndDate($event)">
 										<mat-datepicker-toggle matPrefix [for]="endPicker"></mat-datepicker-toggle>
 										<mat-datepicker #endPicker></mat-datepicker>
@@ -65,6 +75,7 @@
         	<div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 mb-2">
         		<mat-card class="mat-card-outline">
                     <mat-card-content>
+					  <div class="table-container" style="overflow: auto; max-height:68vh;">
                         <table mat-table [dataSource]="dataSource" matSort class="custom-theme-table mat-table">
                             
                             <ng-container matColumnDef="Device">
@@ -102,7 +113,8 @@
                             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                             <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
                         </table>
-                        <mat-paginator [pageSize]="5" showFirstLastButtons></mat-paginator>
+					  </div>
+					  <mat-paginator [pageSize]="10" showFirstLastButtons></mat-paginator>
                     </mat-card-content>
                 </mat-card>
         	</div>

@@ -16,6 +16,8 @@ export class ProfileComponent implements OnInit{
     ){
 
     }
+
+  UserId!:string|null;
   fname!: string;
   lname!: string;
   companyEmail!: string;
@@ -58,16 +60,38 @@ export class ProfileComponent implements OnInit{
   }
 
   const passwordData = {
-    Password: this.password,
+    password: this.password,
   };
+
+  if (this.UserId) {
+    this.dashdataService.updatePassword(this.UserId, passwordData).subscribe(
+      () => {
+        this.snackBar.open('Successfully updated password!', 'Dismiss', {
+          duration: 2000
+          });
+        // Additional logic if needed
+        this.getUserDetail();
+        this.togglePassword();
+      },
+      (error) => {
+        this.snackBar.open('Error updating password!', 'Dismiss', {
+          duration: 2000
+          });
+      }
+    );
+  } else {
+    this.snackBar.open('UserId is not available!', 'Dismiss', {
+      duration: 2000
+      });
+  }
   }
 
   getUserDetail(){
-    const UserId = sessionStorage.getItem('UserId')
-    console.log(UserId);
+    this.UserId = sessionStorage.getItem('UserId')
+    console.log(this.UserId);
 
-    if(UserId){
-      this.dashdataService.getUserData(UserId).subscribe(
+    if(this.UserId){
+      this.dashdataService.getUserData(this.UserId).subscribe(
         (user) => {
           this.dataSource = user.getUserById;
           console.log(this.dataSource);
@@ -83,4 +107,60 @@ export class ProfileComponent implements OnInit{
       )
     }
   }
+
+  updatePersonal() {
+    const PersonalData = {
+      firstName : this.fname,
+      lastName : this.lname
+    }
+    if (this.UserId) {
+      this.dashdataService.updateCompanyDetails(this.UserId, PersonalData).subscribe(
+        () => {
+          this.snackBar.open('Successfully Updated!', 'Dismiss', {
+            duration: 2000
+            });
+          this.getUserDetail();
+          this.togglePersonal();
+        },
+        (error) => {
+          this.snackBar.open('Error for getting details!', 'Dismiss', {
+            duration: 2000
+            });
+        }
+      );
+    } else {
+      this.snackBar.open('UserId is not available!', 'Dismiss', {
+        duration: 2000
+        });
+    }
+  }
+
+  updateCompany() {
+    const CompanyData = {
+      contact : this.contactNo,
+      location : this.location
+    }
+    if (this.UserId) {
+      this.dashdataService.updateContactDetails(this.UserId, CompanyData).subscribe(
+        () => {
+          this.snackBar.open('Successfully Updated!', 'Dismiss', {
+            duration: 2000
+            });
+          this.getUserDetail();
+          this.toggleCompany();
+        },
+        (error) => {
+          this.snackBar.open('Error for getting details!', 'Dismiss', {
+            duration: 2000
+            });
+        }
+      );
+    } else {
+      this.snackBar.open('UserId is not available!', 'Dismiss', {
+        duration: 2000
+        });
+    }
+
+  }
+  
 }

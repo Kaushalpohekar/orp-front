@@ -26,7 +26,6 @@ export class DashDataServiceService {
   }
 
   reportData(reportData: any):Observable<any> {
-    console.log(reportData);
     return this.http.post(`${this.API_URL}/getReportData`, reportData);
   }
 
@@ -70,5 +69,17 @@ export class DashDataServiceService {
   analyticsDataByIntervalForLineChart(deviceID: string | null, interval: any): Observable<any> {
     // Use the second argument to provide the query parameters
     return this.http.get(`${this.API_URL}/get-Analytics-Data-Line-Total-interval/${deviceID}?interval=${interval}`);
+  }
+
+  updateCompanyDetails(UserId:string,companyData:any):Observable<any> {
+    return this.http.put(`${this.API_URL}/updateCompanyDetails/${UserId}`,companyData);
+  }
+
+  updatePassword(UserId:string,passwordData:any):Observable<any> {
+    return this.http.put(`${this.API_URL}/updatePassword/${UserId}`,passwordData);
+  }
+
+  updateContactDetails(UserId:string,contactData:any):Observable<any> {
+    return this.http.put(`${this.API_URL}/updateContactDetails/${UserId}`,contactData);
   }
 }

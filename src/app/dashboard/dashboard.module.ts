@@ -43,11 +43,10 @@ import { DataContainerComponent } from './dashboard-layout/data-container/data-c
 import { SublevelMenuComponent } from './dashboard-layout/sidebar/sublevel-menu.component';
 import { SettingsComponent } from './settings/settings.component';
 import { AddUserComponent } from './settings/add-user/add-user.component';
-import { AddDeviceComponent } from './settings/add-device/add-device.component';
-import { MapComponent } from './dashboard/map/map.component';
 import { EditDeviceComponent } from './settings/edit-device/edit-device.component';
 import { EditUserComponent } from './settings/edit-user/edit-user.component';
 import { ProfileComponent } from './profile/profile.component';
+import { AddDeviceComponent } from './settings/add-device/add-device.component';
 
 
 
@@ -65,7 +64,6 @@ import { ProfileComponent } from './profile/profile.component';
     SettingsComponent,
     AddUserComponent,
     AddDeviceComponent,
-    MapComponent,
     EditDeviceComponent,
     EditUserComponent,
     ProfileComponent
