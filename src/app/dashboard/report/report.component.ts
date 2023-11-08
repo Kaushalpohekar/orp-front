@@ -139,7 +139,6 @@ export class ReportComponent implements OnInit {
         (data) => {
           this.dataSource.data = data.data;
           this.dataSource.paginator = this.paginator;
-          console.log(this.dataSource2);
         },
         (error) => {
 

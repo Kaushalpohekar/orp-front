@@ -59,10 +59,20 @@ export class DashDataServiceService {
   }
 
   analyticsDataByIntervalForPieChart(deviceID: string, interval: any): Observable<any> {
-    const data = { interval: interval }; // Replace with your actual data object
-
-    // Use the second argument to provide the data to be sent in the request
+    const data = { interval: interval };
     return this.http.post(`${this.API_URL}/getAnalyicsData/${deviceID}/intervals`, data);
+  }
+
+  updateCompanyDetails(UserId:string,companyData:any):Observable<any> {
+    return this.http.put(`${this.API_URL}/updateCompanyDetails/${UserId}`,companyData);
+  }
+
+  updatePassword(UserId:string,passwordData:any):Observable<any> {
+    return this.http.put(`${this.API_URL}/updatePassword/${UserId}`,passwordData);
+  }
+
+  updateContactDetails(UserId:string,contactData:any):Observable<any> {
+    return this.http.put(`${this.API_URL}/updateContactDetails/${UserId}`,contactData);
   }
 
 }

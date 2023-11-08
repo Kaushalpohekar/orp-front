@@ -37,6 +37,28 @@ export class SettingsComponent implements OnInit{
 
   ngOnInit(): void{
     this.CompanyEmail = this.authService.getCompanyEmail() ?? '';
+    this.startInterval();
+  }
+
+  ngOnDestroy() {
+    this.stopInterval();
+  }
+
+  startInterval() {
+    this.intervalSubscription = interval(5000)
+      .pipe(take(Infinity))
+      .subscribe(() => {
+        this.fetchData();
+      });
+  }
+
+  stopInterval() {
+    if (this.intervalSubscription) {
+      this.intervalSubscription.unsubscribe();
+    }
+  }
+
+  fetchData() {
     this.deviceList();
     this.userList();
   }

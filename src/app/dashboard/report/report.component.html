@@ -65,7 +65,7 @@
         	<div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 mb-2">
         		<mat-card class="mat-card-outline">
                     <mat-card-content>
-					  <div class="table-container" style="overflow: auto; max-height:74vh;">
+					  <div class="table-container" style="overflow: auto; max-height:68vh;">
                         <table mat-table [dataSource]="dataSource" matSort class="custom-theme-table mat-table">
                             
                             <ng-container matColumnDef="Device">
@@ -103,8 +103,8 @@
                             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                             <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
                         </table>
-                        <mat-paginator [pageSize]="5" showFirstLastButtons></mat-paginator>
 					  </div>
+					  <mat-paginator [pageSize]="10" showFirstLastButtons></mat-paginator>
                     </mat-card-content>
                 </mat-card>
         	</div>
