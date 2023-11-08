@@ -26,6 +26,10 @@ export class ReportComponent implements OnInit {
   start_date = new FormControl('', [Validators.required]);
   end_date = new FormControl('', [Validators.required]);
 
+  id!: string|null;
+  start!: string|null;
+  end!: string|null;
+
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
 
@@ -36,7 +40,15 @@ export class ReportComponent implements OnInit {
 
   ngOnInit() {
     this.deviceList();
+    this.defaultData();
+  }
 
+  defaultData(){
+    this.id = sessionStorage.getItem('defaultDevice');
+    const s = sessionStorage.getItem('start_date');
+    this.start = this.datePipe.transform(s, 'yyyy-MM-dd')??'';
+    const e = sessionStorage.getItem('end_date');
+    this.end = this.datePipe.transform(e, 'yyyy-MM-dd')??'';
   }
 
   updateStartDate(event: MatDatepickerInputEvent<any, any>): void {
@@ -132,8 +144,6 @@ export class ReportComponent implements OnInit {
         start_time: sessionStorage.getItem('start_date'),
         end_time: sessionStorage.getItem('end_date'),
       }
-
-      console.log(reportData);
 
       this.dashDataService.reportData(reportData).subscribe(
         (data) => {
