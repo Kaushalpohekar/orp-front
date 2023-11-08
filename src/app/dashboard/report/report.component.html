@@ -1,11 +1,11 @@
 <div class="content">
     <div class="container-fluid">
-        <div class="row pt-2 mb-2" style="height: 5vh;">
+        <div class="row pt-2 mb-1 mt-1" style="height: 5vh;">
             <div class="col-12">
                 <div class="title">EcoTrade Reports</div>
             </div>
         </div>
-        <div class="row pt-2">
+        <div class="row pt-1">
         	<div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-2">
         		<mat-card>
         			<mat-card-content>
@@ -65,6 +65,7 @@
         	<div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 mb-2">
         		<mat-card class="mat-card-outline">
                     <mat-card-content>
+					  <div class="table-container" style="overflow: auto; max-height:74vh;">
                         <table mat-table [dataSource]="dataSource" matSort class="custom-theme-table mat-table">
                             
                             <ng-container matColumnDef="Device">
@@ -103,6 +104,7 @@
                             <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
                         </table>
                         <mat-paginator [pageSize]="5" showFirstLastButtons></mat-paginator>
+					  </div>
                     </mat-card-content>
                 </mat-card>
         	</div>
