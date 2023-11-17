@@ -41,8 +41,8 @@ export class DashDataServiceService {
     return this.http.delete(`${this.API_URL}/deleteUser/${userId}`);
   }
 
-  deleteDevice(entryId:string):Observable<any> {
-    return this.http.delete(`${this.API_URL}/delete-Device/${entryId}`);
+  deleteDevice(deviceID:string):Observable<any> {
+    return this.http.delete(`${this.API_URL}/delete-Device/${deviceID}`);
   }
 
   editDevice(entryId:string,deviceData:any):Observable<any> {

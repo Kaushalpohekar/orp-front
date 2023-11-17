@@ -97,7 +97,7 @@ export class SettingsComponent implements OnInit{
   }
 
   deleteDevice(device:any){
-    const deviceID = device.entry_id;
+    const deviceID = device.device_uid;
     if(deviceID){
       this.dashDataService.deleteDevice(deviceID).subscribe(
         () => {
