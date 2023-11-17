@@ -25,6 +25,7 @@ export class AnalysisComponent implements OnInit{
   endDate: Date = this.currentDate;
   start_date = new FormControl('', [Validators.required]);
   end_date = new FormControl('', [Validators.required]);
+  orpData: any[] = [];
 
   dataStatus = [
     { status: 'online', percentage: 25.5 },
@@ -35,10 +36,9 @@ export class AnalysisComponent implements OnInit{
 
   ngOnInit() {
     this.CompanyEmail = this.authService.getCompanyEmail() ?? '';
-    this.createDonutChart(this.dataStatus);
-    this.createBarChart();
-    this.createLineChart();
+    
     this.deviceList();
+    
   }
 
   updateStartDate(event: MatDatepickerInputEvent<any, any>): void {
@@ -80,9 +80,32 @@ export class AnalysisComponent implements OnInit{
       this.dashDataService.analyticsDataByIntervalForPieChart(device_uid, interval).subscribe(
         (pieData) => {
           console.log(pieData);
+          this.createDonutChart(pieData);
           this.dashDataService.analyticsDataByIntervalForLineChart(device_uid, interval).subscribe(
             (lineData) => {
-              console.log(lineData);     
+
+              if (Array.isArray(lineData.data)) {
+                this.orpData = lineData.data.map((entry: any) => {
+                  const timestamp = new Date(entry.date_time).getTime();
+                  const orp = parseInt(entry.orp);
+                  return [timestamp, orp];
+                });
+
+                console.log(this.orpData);
+                this.createLineChart();
+                // rest of your code
+              } else {
+                console.error("Line data array not found:", lineData);
+              } 
+              this.dashDataService.analyticsDataByIntervalForBarChart(device_uid, interval).subscribe(
+                (barData) => {
+                  console.log(barData);  
+                  this.createBarChart(barData);   
+                },
+                (error) => {
+                  console.log("Api is nt Working");
+                }
+              );     
             },
             (error) => {
               console.log("Api is nt Working");
@@ -114,9 +137,11 @@ export class AnalysisComponent implements OnInit{
       this.dashDataService.analyticsDataByCustomForPieChart(analyticsData).subscribe(
         (pieData) => {
           console.log(pieData);
+          this.createDonutChart(pieData);
           this.dashDataService.analyticsDataByCustomForLineChart(analyticsData).subscribe(
             (lineData) => {
               console.log(lineData);
+              this.createLineChart();
             },
             (error) => {
               console.log("Api is nt Working");
@@ -134,102 +159,182 @@ export class AnalysisComponent implements OnInit{
   }
 
   createDonutChart(dataStatus: any) {
-    const donutChartData = dataStatus.map((entry: any) => {
-      const formattedPercentage = parseFloat(entry.percentage.toFixed(2)); // Format to two decimal places
-      return {
-        name: entry.status,
-        y: formattedPercentage
-      };
+    // Define an array of colors for each segment
+    const colors = ['#ff9999', '#66b3ff', '#99ff99', '#ffcc99', '#c2c2f0'];
+
+    // Convert dynamic data to an array for the chart with colors
+    const donutChartData = Object.entries(dataStatus).map(([key, value], index: number) => {
+        // Convert hours to minutes and hours
+        const totalMinutes = Math.floor((value as number) * 60);
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
+
+        return {
+            name: key,
+            y: totalMinutes,
+            hours,
+            minutes,
+            color: colors[index % colors.length] // Use modulus to loop through colors
+        };
     });
 
     const options: Highcharts.Options = {
-      chart: {
-        type: 'pie'
-      },
-      title: {
-        text: ''
-      },
-      credits: {
-        enabled: false
-      },
-      plotOptions: {
-        pie: {
-          innerSize: '50%'
-        }
-      },
-      tooltip: {
-        pointFormat: '{series.name}: <b>{point.y}%</b>'
-      },
-      series: [{
-        type: 'pie',
-        name: 'Status',
-        data: donutChartData
-      }]
+        chart: {
+            type: 'pie'
+        },
+        title: {
+            text: ''
+        },
+        credits: {
+            enabled: false
+        },
+        plotOptions: {
+            pie: {
+                innerSize: '50%'
+            }
+        },
+        tooltip: {
+            pointFormat: '{series.name}: <b>{point.hours}h {point.minutes}m</b>'
+        },
+        series: [{
+            type: 'pie',
+            name: 'Status',
+            data: donutChartData
+        }]
     };
 
     Highcharts.chart('donutChart', options);
   }
 
-  createBarChart() {
-    const barChartData = [10, 20, 30, 40, 50]; // Replace with your own data
+  // createBarChart() {
+  //   const barChartData = [10, 20, 30, 40, 50]; // Replace with your own data
 
-    const options: Highcharts.Options = {
-      chart: {
-        type: 'column'
-      },
+  //   const options: Highcharts.Options = {
+  //     chart: {
+  //       type: 'column'
+  //     },
+  //     title: {
+  //       text: ''
+  //     },
+  //     credits: {
+  //       enabled: false
+  //     },
+  //     xAxis: {
+  //       categories: ['Category 1', 'Category 2', 'Category 3', 'Category 4', 'Category 5']
+  //     },
+  //     yAxis: {
+  //       title: {
+  //         text: 'Values'
+  //       }
+  //     },
+  //     series: [{
+  //       type: 'column', // Add the type property
+  //       name: 'Bar Data',
+  //       data: barChartData
+  //     }]
+  //   };
+
+  //   Highcharts.chart('barChart', options);
+  // }
+createBarChart(barData: any[]) {
+  const categories = barData.map(entry => entry.date);
+  const pump1OnTime = barData.map(entry => entry.pump1OnTime);
+  const pump2OnTime = barData.map(entry => entry.pump2OnTime);
+  const combinedOfflineTime = barData.map(entry => entry.combinedOfflineTime);
+  const powerCutTime = barData.map(entry => entry.powerCutTime);
+
+  const options: Highcharts.Options = {
+    chart: {
+      type: 'column'
+    },
+    title: {
+      text: ''
+    },
+    credits: {
+      enabled: false
+    },
+    xAxis: {
+      categories: categories,
+      crosshair: true
+    },
+    yAxis: {
+      min: 0,
       title: {
-        text: ''
-      },
-      credits: {
-        enabled: false
-      },
-      xAxis: {
-        categories: ['Category 1', 'Category 2', 'Category 3', 'Category 4', 'Category 5']
-      },
-      yAxis: {
-        title: {
-          text: 'Values'
-        }
-      },
-      series: [{
-        type: 'column', // Add the type property
-        name: 'Bar Data',
-        data: barChartData
-      }]
-    };
+        text: 'Total Hours'
+      }
+    },
+    tooltip: {
+      headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+      pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                   '<td style="padding:0"><b>{point.y:.2f} hours</b></td></tr>',
+      footerFormat: '</table>',
+      shared: true,
+      useHTML: true
+    },
+    plotOptions: {
+      column: {
+        stacking: 'normal'
+      }
+    },
+    series: [{
+      name: 'Pump 1 On Time',
+      data: pump1OnTime
+    }, {
+      name: 'Pump 2 On Time',
+      data: pump2OnTime
+    }, {
+      name: 'Combined Offline Time',
+      data: combinedOfflineTime
+    }, {
+      name: 'Power Cut Time',
+      data: powerCutTime
+    }] as Highcharts.SeriesColumnOptions[]
+  };
 
-    Highcharts.chart('barChart', options);
-  }
+  Highcharts.chart('barChart', options);
+}
+
+
 
   createLineChart() {
-    const lineChartData = [10, 15, 20, 25, 30, 12, 15, 20, 24, 25, 22 ]; // Replace with your own data
-
-    const options: Highcharts.Options = {
+    Highcharts.chart('lineChart', {
       chart: {
-        type: 'line'
+        type: 'spline'
       },
       title: {
         text: ''
       },
       credits: {
-        enabled: false
-      },
+            enabled: false // Disable the credits display
+          },
+
       xAxis: {
-        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'june', 'july', 'aug', 'seept', 'oct', 'nov']
+        type: 'datetime'
       },
       yAxis: {
         title: {
-          text: 'Values'
-        }
+          text: 'Temperature'
+        },
+        min: 450,
+        max: 600,
       },
       series: [{
-        type: 'line', // Add the type property
-        name: 'Line Data',
-        data: lineChartData
-      }]
-    };
-
-    Highcharts.chart('lineChart', options);
+        name: 'Temperature',
+        color: {
+          linearGradient: {
+            x1: 0,
+            x2: 0,
+            y1: 0,
+            y2: 1
+          },
+          stops: [
+            [0, 'rgba(255, 0, 0, 1)'],    // Start color (red)
+            [1, 'rgba(255, 255, 0, 0.3)'] // End color (yellow)
+          ]
+        },
+        data: this.orpData
+      }] as any
+    } as Highcharts.Options);
   }
 
 

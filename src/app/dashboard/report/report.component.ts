@@ -166,6 +166,12 @@ export class ReportComponent implements OnInit {
         
             this.dashDataService.reportData(reportData).subscribe(
               (data) => {
+                data.data.forEach((item: Devices) => {
+                  const parsedDate = new Date(item.date_time);
+                  item.date = this.datePipe.transform(parsedDate, 'yyyy-MM-dd');
+                  item.time = this.datePipe.transform(parsedDate, 'HH:mm:ss');
+                });
+
                 this.dataSource.data = data.data;
                 this.data = data.data;
                 this.dataSource.paginator = this.paginator;
@@ -200,6 +206,12 @@ export class ReportComponent implements OnInit {
 
     this.dashDataService.reportData(reportData).subscribe(
       (data) => {
+        data.data.forEach((item: Devices) => {
+          const parsedDate = new Date(item.date_time);
+          item.date = this.datePipe.transform(parsedDate, 'yyyy-MM-dd');
+          item.time = this.datePipe.transform(parsedDate, 'HH:mm:ss');
+        });
+        
         this.dataSource.data = data.data;
         this.data = data.data;
         this.dataSource.paginator = this.paginator;
@@ -230,6 +242,13 @@ export class ReportComponent implements OnInit {
 
       this.dashDataService.reportData(reportData).subscribe(
         (data) => {
+
+          data.data.forEach((item: Devices) => {
+            const parsedDate = new Date(item.date_time);
+            item.date = this.datePipe.transform(parsedDate, 'yyyy-MM-dd');
+            item.time = this.datePipe.transform(parsedDate, 'HH:mm:ss');
+          });
+
           this.dataSource.data = data.data;
           this.data = data.data;
           this.dataSource.paginator = this.paginator;
@@ -253,6 +272,9 @@ export interface Devices {
   Location: string;
   device_latitude: number;
   device_longitude: number;
+  date: string | null;
+  time: string | null;
+  date_time: string;
 }
 
 const ELEMENT_DATA: Devices[] = [];

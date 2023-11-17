@@ -13,8 +13,8 @@
 		                    <mat-label>Select Device</mat-label>
 		                    <mat-select required [formControl]="device_uid">
 		                        <mat-option *ngFor="let device of devices" [value]="device.device_uid">{{device.device_name}}</mat-option>
-		                        <mat-error *ngIf="device_uid.invalid">Required*</mat-error>
 		                    </mat-select> 
+		                    <mat-error *ngIf="device_uid.invalid">Required*</mat-error>
 		                </mat-form-field>
 		            </div>
 		    		<div class="col-xl-5 col-lg-6 col-md-8 col-sm-12" style="margin-bottom: 27px;">
