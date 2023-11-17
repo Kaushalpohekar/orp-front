@@ -31,8 +31,15 @@
     z-index: 2;
   }
 
+.on{
+    color: green;
+    font-weight: 550;
+}
 
-
+.off{
+    color: red;
+    font-weight: 550;
+}
 
 
 
