@@ -6,6 +6,8 @@ import { DashDataServiceService } from '../dash-data-service/dash-data-service.s
 import { FormControl, Validators } from '@angular/forms';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { DatePipe } from '@angular/common';
+import { Subscription, interval, take } from 'rxjs';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 HighchartsMore(Highcharts);
 
@@ -27,6 +29,45 @@ export class AnalysisComponent implements OnInit{
   start_date = new FormControl('', [Validators.required]);
   end_date = new FormControl('', [Validators.required]);
   orpData: any[] = [];
+  intervalSubscription: Subscription | undefined;
+
+  id!: string|null;
+  start!: string|null;
+  end!: string|null;
+  cInterval!: string|null;
+
+  ngOnDestroy() {
+    this.stopInterval();
+  }
+
+  startInterval() {
+    this.intervalSubscription = interval(1000)
+      .pipe(take(Infinity))
+      .subscribe(() => {
+        this.defaultData();
+      });
+  }
+
+  stopInterval() {
+    if (this.intervalSubscription) {
+      this.intervalSubscription.unsubscribe();
+    }
+  }
+
+  defaultData(){    
+    this.id = sessionStorage.getItem('analyticsDefaultDevice');
+    this.cInterval = sessionStorage.getItem('analytics_interval');
+    if(this.cInterval === 'custom'){
+      const s = sessionStorage.getItem('analytics_start_date');
+      this.start = this.datePipe.transform(s, 'yyyy-MM-dd')??'';
+      const e = sessionStorage.getItem('analytics_end_date');
+      this.end = this.datePipe.transform(e, 'yyyy-MM-dd')??'';
+    }
+    else{
+      this.start = '';
+      this.end = '';
+    }
+  }
 
   dataStatus = [
     { status: 'online', percentage: 25.5 },
@@ -36,9 +77,8 @@ export class AnalysisComponent implements OnInit{
   dataSource2: any;
 
   ngOnInit() {
-    this.CompanyEmail = this.authService.getCompanyEmail() ?? '';
     this.deviceList();
-    
+    this.startInterval();
   }
 
   updateStartDate(event: MatDatepickerInputEvent<any, any>): void {
@@ -56,88 +96,177 @@ export class AnalysisComponent implements OnInit{
     }
   }
 
-  constructor(private authService: AuthService, public dashDataService : DashDataServiceService, private datePipe: DatePipe){
+  constructor(private authService: AuthService, public dashDataService : DashDataServiceService, private datePipe: DatePipe,private snackBar:MatSnackBar){
     
   }
 
   deviceList(){
-    if(this.CompanyEmail){
-      this.dashDataService.deviceDetails(this.CompanyEmail).subscribe(
+    const CompanyEmail = sessionStorage.getItem('companyEmail');
+    if(CompanyEmail){
+      this.dashDataService.deviceDetails(CompanyEmail).subscribe(
         (device) => {
-          this.devices = device.devices;
+          this.dataSource2 = device.devices;
           this.analyticsFirstDevice = this.dataSource2[0].device_uid;
           const deviceId = sessionStorage.getItem('analyticsDefaultDevice');
           if(deviceId === null){
             sessionStorage.setItem('analyticsDefaultDevice',this.analyticsFirstDevice);
             this.setDefaultValue();
           }else{
-            const custom_interval = sessionStorage.getItem('analyticsDefaultDevice');
-            if(custom_interval === 'Custom'){
-              
+            const custom_interval = sessionStorage.getItem('analytics_interval');
+            if(custom_interval === 'custom'){
+              const analyticsData ={
+                device_uid: sessionStorage.getItem('analyticsDefaultDevice'),
+                start_time: sessionStorage.getItem('analytics_start_date'),
+                end_time: sessionStorage.getItem('analytics_end_date'),
+              }
+              this.dashDataService.analyticsDataByCustomForPieChart(analyticsData).subscribe(
+                (pieData) => {
+                  this.createDonutChart(pieData);
+                  this.dashDataService.analyticsDataByCustomForLineChart(analyticsData).subscribe(
+                    (lineData) => {
+                      this.createLineChart();
+                      this.dashDataService.analyticsDataByCustomForBarChart(analyticsData).subscribe(
+                        (barData) => {
+                          this.createBarChart(barData);  
+                        },
+                        (error) => {
+                          this.snackBar.open('Failed to load Bar data!', 'Dismiss', {
+                            duration: 2000
+                            });
+                        }
+                      );
+                    },
+                    (error) => {
+                      this.snackBar.open('Failed to load Line data!', 'Dismiss', {
+                        duration: 2000
+                        });
+                    }
+                  );
+                },
+                (error) => {
+                  this.snackBar.open('Failed to load Pie Data!', 'Dismiss', {
+                    duration: 2000
+                    });
+                }
+              );
+            }
+            else if(custom_interval != null){
+              const device_uid = sessionStorage.getItem('analyticsDefaultDevice');
+              const interval = sessionStorage.getItem('analytics_interval');
+              this.dashDataService.analyticsDataByIntervalForPieChart(device_uid, interval).subscribe(
+                (pieData) => {
+                  this.createDonutChart(pieData);
+                  this.dashDataService.analyticsDataByIntervalForLineChart(device_uid, interval).subscribe(
+                    (lineData) => {
+          
+                      if (Array.isArray(lineData.data)) {
+                        this.orpData = lineData.data.map((entry: any) => {
+                          const timestamp = new Date(entry.date_time).getTime();
+                          const orp = parseInt(entry.orp);
+                          return [timestamp, orp];
+                        });
+                        this.createLineChart();
+                      } else {
+                        this.snackBar.open('Line Data Array Not Found!', 'Dismiss', {
+                          duration: 2000
+                          });
+                      } 
+                      this.dashDataService.analyticsDataByIntervalForBarChart(device_uid, interval).subscribe(
+                        (barData) => {
+                          this.createBarChart(barData);   
+                        },
+                        (error) => {
+                          this.snackBar.open('Failed to load Bar data!', 'Dismiss', {
+                        duration: 2000
+                        });
+                        }
+                      );     
+                    },
+                    (error) => {
+                      this.snackBar.open('Failed to load Line data!', 'Dismiss', {
+                        duration: 2000
+                        });
+                    }
+                  );
+                },
+                (error) => {
+                  this.snackBar.open('Failed to load Pie Data!', 'Dismiss', {
+                        duration: 2000
+                        });
+                }
+              );
+            }
+            else{
+              this.snackBar.open('No Data Available!', 'Dismiss', {
+                duration: 2000
+                });
             }
           }
         },
         (error) => {
-          console.log("Error while fetching the device List");
+          this.snackBar.open('Error while fetching Device Data!', 'Dismiss', {
+            duration: 2000
+            });
         }
       );
     }
   }
 
   setDefaultValue(){
-    const setting_interval = sessionStorage.setItem('analytics_interval','day');
+    sessionStorage.setItem('analytics_interval','day');
     const device_uid= sessionStorage.getItem('analyticsDefaultDevice');
     const interval = sessionStorage.getItem('analytics_interval');
 
     this.dashDataService.analyticsDataByIntervalForPieChart(device_uid, interval).subscribe(
       (pieData) => {
-        console.log(pieData);
         this.createDonutChart(pieData);
         this.dashDataService.analyticsDataByIntervalForLineChart(device_uid, interval).subscribe(
           (lineData) => {
-
             if (Array.isArray(lineData.data)) {
               this.orpData = lineData.data.map((entry: any) => {
                 const timestamp = new Date(entry.date_time).getTime();
                 const orp = parseInt(entry.orp);
                 return [timestamp, orp];
               });
-
-              console.log(this.orpData);
               this.createLineChart();
-              // rest of your code
             } else {
-              console.error("Line data array not found:", lineData);
+              this.snackBar.open('Line Data Array Not Found!', 'Dismiss', {
+                duration: 2000
+                });
             } 
             this.dashDataService.analyticsDataByIntervalForBarChart(device_uid, interval).subscribe(
-              (barData) => {
-                console.log(barData);  
+              (barData) => { 
                 this.createBarChart(barData);   
               },
               (error) => {
-                console.log("Api is nt Working");
+                this.snackBar.open('Failed to load Bar data!', 'Dismiss', {
+                  duration: 2000
+                  });
               }
             );     
           },
           (error) => {
-            console.log("Api is nt Working");
+            this.snackBar.open('Failed to load Line data!', 'Dismiss', {
+              duration: 2000
+              });
           }
         );
       },
       (error) => {
-        console.log("Api is nt Working");
+        this.snackBar.open('Failed to load Pie Data!', 'Dismiss', {
+          duration: 2000
+          });
       }
     );
   }
 
   applyFilterInterval(interval: string){
     if(this.device_uid.valid && interval){
+      sessionStorage.setItem('analytics_interval',interval)
       const device_uid = this.device_uid.value??'';
       sessionStorage.setItem('analyticsDefaultDevice',device_uid);
-      console.log("Selected Value", interval, device_uid);
       this.dashDataService.analyticsDataByIntervalForPieChart(device_uid, interval).subscribe(
         (pieData) => {
-          console.log(pieData);
           this.createDonutChart(pieData);
           this.dashDataService.analyticsDataByIntervalForLineChart(device_uid, interval).subscribe(
             (lineData) => {
@@ -148,44 +277,50 @@ export class AnalysisComponent implements OnInit{
                   const orp = parseInt(entry.orp);
                   return [timestamp, orp];
                 });
-
-                console.log(this.orpData);
                 this.createLineChart();
-                // rest of your code
               } else {
-                console.error("Line data array not found:", lineData);
+                this.snackBar.open('Line Data Array Not Found!', 'Dismiss', {
+                  duration: 2000
+                  });
               } 
               this.dashDataService.analyticsDataByIntervalForBarChart(device_uid, interval).subscribe(
                 (barData) => {
-                  console.log(barData);  
                   this.createBarChart(barData);   
                 },
                 (error) => {
-                  console.log("Api is nt Working");
+                  this.snackBar.open('Failed to load Bar data!', 'Dismiss', {
+                    duration: 2000
+                    });
                 }
               );     
             },
             (error) => {
-              console.log("Api is nt Working");
+              this.snackBar.open('Failed to load Line data!', 'Dismiss', {
+                duration: 2000
+                });
             }
           );
         },
         (error) => {
-          console.log("Api is nt Working");
+          this.snackBar.open('Failed to load Bar data!', 'Dismiss', {
+            duration: 2000
+            });
         }
       );
     } else {
-      console.log("Select device_uid First");
+      this.snackBar.open('No data Available!', 'Dismiss', {
+        duration: 2000
+        });
     } 
   }
 
   applyCustomFilter(){
+    sessionStorage.setItem('analytics_interval','custom');
     if(this.start_date.valid && this.end_date.valid && this.device_uid.valid){
-
-
       const formattedStartDate = this.datePipe.transform(this.start_date.value, 'yyyy-MM-dd HH:mm:ss')??'';
       const formattedEndDate = this.datePipe.transform(this.end_date.value, 'yyyy-MM-dd HH:mm:ss')??'';
-
+      sessionStorage.setItem('analytics_start_date',formattedStartDate)
+      sessionStorage.setItem('analytics_end_date',formattedEndDate)
 
       const analyticsData ={
         device_uid : this.device_uid.value,
@@ -194,34 +329,38 @@ export class AnalysisComponent implements OnInit{
       }
       this.dashDataService.analyticsDataByCustomForPieChart(analyticsData).subscribe(
         (pieData) => {
-          console.log(pieData);
           this.createDonutChart(pieData);
           this.dashDataService.analyticsDataByCustomForLineChart(analyticsData).subscribe(
             (lineData) => {
-              console.log(lineData);
               this.createLineChart();
               this.dashDataService.analyticsDataByCustomForBarChart(analyticsData).subscribe(
                 (barData) => {
-                  console.log(barData);
                   this.createBarChart(barData);  
                 },
                 (error) => {
-                  console.log("Api is nt Working");
+                  this.snackBar.open('Failed to load Bar data!', 'Dismiss', {
+                    duration: 2000
+                  });
                 }
               );
             },
             (error) => {
-              console.log("Api is nt Working");
+              this.snackBar.open('Failed to load Line data!', 'Dismiss', {
+                duration: 2000
+              });
             }
           );
         },
         (error) => {
-          console.log("Api is nt Working");
+          this.snackBar.open('Failed to load Pie Data!', 'Dismiss', {
+            duration: 2000
+          });
         }
       );
-      console.log(analyticsData);
     } else {
-      console.log("select dates first");
+      this.snackBar.open('No Data Available!', 'Dismiss', {
+        duration: 2000
+        });
     }
   }
 

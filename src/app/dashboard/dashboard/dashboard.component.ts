@@ -7,6 +7,7 @@ import { AuthService } from '../../login/auth/auth.service';
 import { DashDataServiceService } from '../dash-data-service/dash-data-service.service';
 import { Subscription } from 'rxjs';
 import { MqttService, IMqttMessage } from 'ngx-mqtt';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-dashboard',
@@ -27,7 +28,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private Highcharts: typeof Highcharts = Highcharts;
 
-  constructor(private mqttService: MqttService, private el: ElementRef, private authService: AuthService, private dashDataService: DashDataServiceService) {}
+  constructor(private mqttService: MqttService, private el: ElementRef, private authService: AuthService, private dashDataService: DashDataServiceService,public snackBar:MatSnackBar) {}
 
   ngOnInit() {
     this.CompanyEmail = this.authService.getCompanyEmail() ?? '';
@@ -46,7 +47,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       const subscription = this.mqttService.observe(topic).subscribe((message: IMqttMessage) => {
         const payload = message.payload.toString();
         const deviceData = JSON.parse(payload);
-        console.log(deviceData);
         const index = this.devices.findIndex(d => d.device_uid === device.device_uid);
         if (index !== -1) {
           this.deviceData[index] = deviceData;
@@ -78,7 +78,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.subscribeToTopics();
         },
         (error) => {
-          console.log("Error while fetchingg tthee device List");
+          this.snackBar.open('Error while fetching devices data!', 'Dismiss', {
+            duration: 2000
+            });
         }
       );
     }
@@ -99,7 +101,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
         });
 
         const { device_latitude, device_longitute, device_name, Location } = device;
-        console.log(device);
 
         const marker = L.marker([device_latitude, device_longitute], { icon: customIcon }).addTo(map);
         marker.bindPopup(`${device_name}, ${Location}`);

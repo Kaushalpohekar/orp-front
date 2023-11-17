@@ -87,6 +87,7 @@ export class EditUserComponent  implements OnInit{
             'Dismiss',
             { duration: 2000 }
           );
+          this.dialogRef.close();
         }
       );
     }    

@@ -9,6 +9,7 @@ import { AddDeviceComponent } from './add-device/add-device.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { EditUserComponent } from './edit-user/edit-user.component';
 import { EditDeviceComponent } from './edit-device/edit-device.component';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-settings',
@@ -45,7 +46,7 @@ export class SettingsComponent implements OnInit{
   }
 
   startInterval() {
-    this.intervalSubscription = interval(2000)
+    this.intervalSubscription = interval(4000)
       .pipe(take(Infinity))
       .subscribe(() => {
         this.fetchData();
@@ -71,47 +72,63 @@ export class SettingsComponent implements OnInit{
           this.totalUsers = this.dataSource.length;
         },
         (error) => {
-          console.log("Error while fetchingg tthee device List");
+          this.snackBar.open('Error while fetching Devices Data!', 'Dismiss', {
+            duration: 2000
+          });
         }
       );
     }
   }
 
-  deleteUser(user:any){
+  deleteUser(user: any) {
     const userID = user.UserId;
-    if(userID){
-      this.dashDataService.deleteUser(userID).subscribe(
-        () => {
-          this.snackBar.open('User Deleted successfully!', 'Dismiss', {
-            duration: 2000
-          });
-        },
-        (error) => {
-          this.snackBar.open('Failed to delete User. Please try again.',
-            'Dismiss',
-            { duration: 2000 }
+    if (userID) {
+      Swal.fire({
+        title: 'Are you sure?',
+        text: 'You won\'t be able to revert this!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.dashDataService.deleteUser(userID).subscribe(
+            () => {
+              Swal.fire('Deleted!', 'User has been deleted.', 'success');
+            },
+            (error) => {
+              Swal.fire('Error!', 'Failed to delete user. Please try again.', 'error');
+            }
           );
         }
-      )
+      });
     }
   }
 
-  deleteDevice(device:any){
+  deleteDevice(device: any) {
     const deviceID = device.device_uid;
-    if(deviceID){
-      this.dashDataService.deleteDevice(deviceID).subscribe(
-        () => {
-          this.snackBar.open('Device Deleted successfully!', 'Dismiss', {
-            duration: 2000
-          });
-        },
-        (error) => {
-          this.snackBar.open('Failed to delete device. Please try again.',
-            'Dismiss',
-            { duration: 2000 }
+    if (deviceID) {
+      Swal.fire({
+        title: 'Are you sure?',
+        text: 'You won\'t be able to revert this!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.dashDataService.deleteDevice(deviceID).subscribe(
+            () => {
+              Swal.fire('Deleted!', 'Device has been deleted.', 'success');
+            },
+            (error) => {
+              Swal.fire('Error!', 'Failed to delete device. Please try again.', 'error');
+            }
           );
         }
-      )
+      });
     }
   }
 
@@ -131,7 +148,9 @@ export class SettingsComponent implements OnInit{
           this.totalDevices = this.dataSource2.length;
         },
         (error) => {
-          console.log("Error while fetching the device List");
+          this.snackBar.open('Error while fetching devices Data!', 'Dismiss', {
+            duration: 2000
+          });
         }
       );
     }

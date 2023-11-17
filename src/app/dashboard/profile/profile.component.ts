@@ -88,13 +88,11 @@ export class ProfileComponent implements OnInit{
 
   getUserDetail(){
     this.UserId = sessionStorage.getItem('UserId')
-    console.log(this.UserId);
 
     if(this.UserId){
       this.dashdataService.getUserData(this.UserId).subscribe(
         (user) => {
           this.dataSource = user.getUserById;
-          console.log(this.dataSource);
           this.fname = this.dataSource[0].FirstName;
           this.lname = this.dataSource[0].LastName;
           this.companyEmail = this.dataSource[0].CompanyEmail;
@@ -105,6 +103,11 @@ export class ProfileComponent implements OnInit{
           this.companyName = this.dataSource[0].CompanyName; 
         }
       )
+    }
+    else{
+      this.snackBar.open('No User Data Available!', 'Dismiss', {
+        duration: 2000
+        });
     }
   }
 

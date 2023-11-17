@@ -70,8 +70,6 @@ export class EditDeviceComponent  implements OnInit{
         company_email: Email
       }
 
-      console.log(deviceData);
-
       this.DashDataService.editDevice(this.deviceId,deviceData).subscribe(
           () => {
           this.snackBar.open('Device Updated successfully!', 'Dismiss', {
@@ -84,6 +82,7 @@ export class EditDeviceComponent  implements OnInit{
             'Dismiss',
             { duration: 2000 }
           );
+          this.dialogRef.close();
         }
       );
     }    

@@ -58,7 +58,7 @@ export class ReportComponent implements OnInit {
   }
 
   startInterval() {
-    this.intervalSubscription = interval(100)
+    this.intervalSubscription = interval(1000)
       .pipe(take(Infinity))
       .subscribe(() => {
         this.defaultData();
@@ -177,13 +177,17 @@ export class ReportComponent implements OnInit {
                 this.dataSource.paginator = this.paginator;
               },
               (error) => {
-        
+                this.snackBar.open('Error while getting Data!', 'Dismiss', {
+                  duration: 2000
+                  });
               }
             );
           }       
         },
         (error) => {
-          console.log("Error while fetching the device List");
+          this.snackBar.open('Error while fetching devices Data!', 'Dismiss', {
+            duration: 2000
+            });
         }
       );
     }
@@ -217,7 +221,9 @@ export class ReportComponent implements OnInit {
         this.dataSource.paginator = this.paginator;
       },
       (error) => {
-
+        this.snackBar.open('Error while getting Data!', 'Dismiss', {
+          duration: 2000
+        });
       }
     );
   }
@@ -254,7 +260,9 @@ export class ReportComponent implements OnInit {
           this.dataSource.paginator = this.paginator;
         },
         (error) => {
-
+          this.snackBar.open('Error while getting Data!', 'Dismiss', {
+            duration: 2000
+            });
         }
       );
     } else {

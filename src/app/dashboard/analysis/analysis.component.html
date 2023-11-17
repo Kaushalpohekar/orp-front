@@ -11,8 +11,8 @@
 		    		<div class="col-xl-2 col-lg-2 col-md-4 col-sm-12 mb-1">
 		                <mat-form-field appearance="outline" class="form-field">
 		                    <mat-label>Select Device</mat-label>
-		                    <mat-select required [formControl]="device_uid">
-		                        <mat-option *ngFor="let device of devices" [value]="device.device_uid">{{device.device_name}}</mat-option>
+		                    <mat-select required [formControl]="device_uid" [value]="id">
+		                        <mat-option *ngFor="let device of dataSource2" [value]="device.device_uid">{{device.device_name}}</mat-option>
 		                    </mat-select> 
 		                    <mat-error *ngIf="device_uid.invalid">Required*</mat-error>
 		                </mat-form-field>
@@ -28,10 +28,10 @@
 						  <mat-button-toggle class="button-group" value="Custom">Custom</mat-button-toggle>
 						</mat-button-toggle-group>
 					  </div>
-						<div class="col-xl-2 col-lg-2 col-md-5 col-sm-5 mb-1"  *ngIf="selectedValue === 'Custom'">
+						<div class="col-xl-2 col-lg-2 col-md-5 col-sm-5 mb-1"  *ngIf="selectedValue === 'Custom' || cInterval === 'custom'">
 						  <mat-form-field class="form-field" appearance="outline">
 							<mat-label>Start Date</mat-label>
-							<input matInput placeholder="Select Date" [matDatepicker]="startPicker" required  [formControl]="start_date"
+							<input matInput placeholder="Select Date" [matDatepicker]="startPicker" [ngModel]="start" required  [formControl]="start_date"
 								[max]="currentDate" (dateChange)="updateStartDate($event)">
 							<mat-datepicker-toggle matPrefix [for]="startPicker"></mat-datepicker-toggle>
 							<mat-datepicker #startPicker></mat-datepicker>
@@ -39,17 +39,17 @@
 						  </mat-form-field>
 						</div>
 					  
-						<div class="col-xl-2 col-lg-2 col-md-5 col-sm-5 mb-1" *ngIf="selectedValue === 'Custom'">
+						<div class="col-xl-2 col-lg-2 col-md-5 col-sm-5 mb-1" *ngIf="selectedValue === 'Custom' || cInterval === 'custom'">
 						  <mat-form-field class="form-field" appearance="outline">
 							<mat-label>End Date</mat-label>
-							<input matInput placeholder="Select Date" [matDatepicker]="endPicker" required  [formControl]="end_date"
+							<input matInput placeholder="Select Date" [matDatepicker]="endPicker" [ngModel]="end" required  [formControl]="end_date"
 								[min]="startDate" [max]="currentDate" (dateChange)="updateEndDate($event)">
 							<mat-datepicker-toggle matPrefix [for]="endPicker"></mat-datepicker-toggle>
 							<mat-datepicker #endPicker></mat-datepicker>
 							<mat-error *ngIf = "end_date.invalid ">End Date is Required*</mat-error>
 						  </mat-form-field>
 						</div>
-		            <div class="col-xl-1 col-lg-1 col-md-2 col-sm-2 mb-1" *ngIf="selectedValue === 'Custom'">
+		            <div class="col-xl-1 col-lg-1 col-md-2 col-sm-2 mb-1" *ngIf="selectedValue === 'Custom' || cInterval === 'custom'">
 		                <div class="">
 		                	<button mat-fab style="background-color: #a6a6a6;color: #fff;" (click)="applyCustomFilter()">
 					          <mat-icon>filter_list</mat-icon>
