@@ -1,34 +1,71 @@
-import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, OnDestroy } from '@angular/core';
 import * as Highcharts from 'highcharts';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import * as L from 'leaflet';
 import { AuthService } from '../../login/auth/auth.service';
 import { DashDataServiceService } from '../dash-data-service/dash-data-service.service';
+import { Subscription } from 'rxjs';
+import { MqttService, IMqttMessage } from 'ngx-mqtt';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = ['DeviceName', 'Pump 1', 'Pump 2', 'Location'];
   dataSource = new MatTableDataSource<Device>(ELEMENT_DATA);
   panelOpenState = false;
   CompanyEmail!: string;
   devices!: any[];
+  mqttSubscriptions: Subscription[] = [];
+  deviceData: any[] = [];
 
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
   @ViewChild('mapContainer') mapContainer!: ElementRef;
 
   private Highcharts: typeof Highcharts = Highcharts;
 
-  constructor(private el: ElementRef, private authService: AuthService, private dashDataService: DashDataServiceService) {}
+  constructor(private mqttService: MqttService, private el: ElementRef, private authService: AuthService, private dashDataService: DashDataServiceService) {}
 
   ngOnInit() {
     this.CompanyEmail = this.authService.getCompanyEmail() ?? '';
     this.dataSource.sort = this.sort;
     this.deviceList();
+  }
+
+  ngOnDestroy() {
+    this.unsubscribeFromTopics();
+  }
+
+  subscribeToTopics() {
+    this.deviceData = [];
+    this.devices.forEach(device => {
+      const topic = `EnergyCoilStatus/SenseLive/${device.device_uid}/1`;
+      const subscription = this.mqttService.observe(topic).subscribe((message: IMqttMessage) => {
+        const payload = message.payload.toString();
+        const deviceData = JSON.parse(payload);
+        console.log(deviceData);
+        const index = this.devices.findIndex(d => d.device_uid === device.device_uid);
+        if (index !== -1) {
+          this.deviceData[index] = deviceData;
+        }
+      });
+
+      this.mqttSubscriptions.push(subscription);
+    });
+  }
+
+  getIndex(device_uid: string): number {
+    return this.devices.findIndex(device => device.device_uid === device_uid);
+  }
+
+  unsubscribeFromTopics() {
+    this.mqttSubscriptions.forEach(subscription => {
+      subscription.unsubscribe();
+    });
+    this.mqttSubscriptions = [];
   }
 
   deviceList(){
@@ -38,6 +75,7 @@ export class DashboardComponent implements OnInit {
           this.dataSource = device.devices;
           this.devices = device.devices;
           this.indiamap(this.devices);
+          this.subscribeToTopics();
         },
         (error) => {
           console.log("Error while fetchingg tthee device List");

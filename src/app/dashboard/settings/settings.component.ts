@@ -125,7 +125,8 @@ export class SettingsComponent implements OnInit{
             device_uid:d.device_uid,   
             device_latitude:d.device_latitude,
             device_longitude:d.device_longitute,
-            entry_id:d.entry_id  
+            entry_id:d.entry_id,  
+            Location:d.Location
           }));
           this.totalDevices = this.dataSource2.length;
         },
