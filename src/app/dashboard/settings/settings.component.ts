@@ -45,7 +45,7 @@ export class SettingsComponent implements OnInit{
   }
 
   startInterval() {
-    this.intervalSubscription = interval(5000)
+    this.intervalSubscription = interval(2000)
       .pipe(take(Infinity))
       .subscribe(() => {
         this.fetchData();

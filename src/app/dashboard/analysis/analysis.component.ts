@@ -17,6 +17,7 @@ HighchartsMore(Highcharts);
 export class AnalysisComponent implements OnInit{
 
   selectedValue!: string;
+  analyticsFirstDevice!:string;
   device_uid = new FormControl('',[Validators.required]);
   CompanyEmail!: string;
   devices!: any[];
@@ -36,7 +37,6 @@ export class AnalysisComponent implements OnInit{
 
   ngOnInit() {
     this.CompanyEmail = this.authService.getCompanyEmail() ?? '';
-    
     this.deviceList();
     
   }
@@ -65,17 +65,75 @@ export class AnalysisComponent implements OnInit{
       this.dashDataService.deviceDetails(this.CompanyEmail).subscribe(
         (device) => {
           this.devices = device.devices;
+          this.analyticsFirstDevice = this.dataSource2[0].device_uid;
+          const deviceId = sessionStorage.getItem('analyticsDefaultDevice');
+          if(deviceId === null){
+            sessionStorage.setItem('analyticsDefaultDevice',this.analyticsFirstDevice);
+            this.setDefaultValue();
+          }else{
+            const custom_interval = sessionStorage.getItem('analyticsDefaultDevice');
+            if(custom_interval === 'Custom'){
+              
+            }
+          }
         },
         (error) => {
-          console.log("Error while fetchingg tthee device List");
+          console.log("Error while fetching the device List");
         }
       );
     }
   }
 
+  setDefaultValue(){
+    const setting_interval = sessionStorage.setItem('analytics_interval','day');
+    const device_uid= sessionStorage.getItem('analyticsDefaultDevice');
+    const interval = sessionStorage.getItem('analytics_interval');
+
+    this.dashDataService.analyticsDataByIntervalForPieChart(device_uid, interval).subscribe(
+      (pieData) => {
+        console.log(pieData);
+        this.createDonutChart(pieData);
+        this.dashDataService.analyticsDataByIntervalForLineChart(device_uid, interval).subscribe(
+          (lineData) => {
+
+            if (Array.isArray(lineData.data)) {
+              this.orpData = lineData.data.map((entry: any) => {
+                const timestamp = new Date(entry.date_time).getTime();
+                const orp = parseInt(entry.orp);
+                return [timestamp, orp];
+              });
+
+              console.log(this.orpData);
+              this.createLineChart();
+              // rest of your code
+            } else {
+              console.error("Line data array not found:", lineData);
+            } 
+            this.dashDataService.analyticsDataByIntervalForBarChart(device_uid, interval).subscribe(
+              (barData) => {
+                console.log(barData);  
+                this.createBarChart(barData);   
+              },
+              (error) => {
+                console.log("Api is nt Working");
+              }
+            );     
+          },
+          (error) => {
+            console.log("Api is nt Working");
+          }
+        );
+      },
+      (error) => {
+        console.log("Api is nt Working");
+      }
+    );
+  }
+
   applyFilterInterval(interval: string){
     if(this.device_uid.valid && interval){
-      const device_uid = this.device_uid.value;
+      const device_uid = this.device_uid.value??'';
+      sessionStorage.setItem('analyticsDefaultDevice',device_uid);
       console.log("Selected Value", interval, device_uid);
       this.dashDataService.analyticsDataByIntervalForPieChart(device_uid, interval).subscribe(
         (pieData) => {
