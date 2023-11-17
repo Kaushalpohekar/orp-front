@@ -142,6 +142,15 @@ export class AnalysisComponent implements OnInit{
             (lineData) => {
               console.log(lineData);
               this.createLineChart();
+              this.dashDataService.analyticsDataByCustomForBarChart(analyticsData).subscribe(
+                (barData) => {
+                  console.log(barData);
+                  this.createBarChart(barData);  
+                },
+                (error) => {
+                  console.log("Api is nt Working");
+                }
+              );
             },
             (error) => {
               console.log("Api is nt Working");
@@ -206,95 +215,63 @@ export class AnalysisComponent implements OnInit{
     Highcharts.chart('donutChart', options);
   }
 
-  // createBarChart() {
-  //   const barChartData = [10, 20, 30, 40, 50]; // Replace with your own data
+  createBarChart(barData: any[]) {
+    const categories = barData.map(entry => entry.date);
+    const pump1OnTime = barData.map(entry => entry.pump1OnTime);
+    const pump2OnTime = barData.map(entry => entry.pump2OnTime);
+    const combinedOfflineTime = barData.map(entry => entry.combinedOfflineTime);
+    const powerCutTime = barData.map(entry => entry.powerCutTime);
 
-  //   const options: Highcharts.Options = {
-  //     chart: {
-  //       type: 'column'
-  //     },
-  //     title: {
-  //       text: ''
-  //     },
-  //     credits: {
-  //       enabled: false
-  //     },
-  //     xAxis: {
-  //       categories: ['Category 1', 'Category 2', 'Category 3', 'Category 4', 'Category 5']
-  //     },
-  //     yAxis: {
-  //       title: {
-  //         text: 'Values'
-  //       }
-  //     },
-  //     series: [{
-  //       type: 'column', // Add the type property
-  //       name: 'Bar Data',
-  //       data: barChartData
-  //     }]
-  //   };
-
-  //   Highcharts.chart('barChart', options);
-  // }
-createBarChart(barData: any[]) {
-  const categories = barData.map(entry => entry.date);
-  const pump1OnTime = barData.map(entry => entry.pump1OnTime);
-  const pump2OnTime = barData.map(entry => entry.pump2OnTime);
-  const combinedOfflineTime = barData.map(entry => entry.combinedOfflineTime);
-  const powerCutTime = barData.map(entry => entry.powerCutTime);
-
-  const options: Highcharts.Options = {
-    chart: {
-      type: 'column'
-    },
-    title: {
-      text: ''
-    },
-    credits: {
-      enabled: false
-    },
-    xAxis: {
-      categories: categories,
-      crosshair: true
-    },
-    yAxis: {
-      min: 0,
+    const options: Highcharts.Options = {
+      chart: {
+        type: 'column'
+      },
       title: {
-        text: 'Total Hours'
-      }
-    },
-    tooltip: {
-      headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-      pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-                   '<td style="padding:0"><b>{point.y:.2f} hours</b></td></tr>',
-      footerFormat: '</table>',
-      shared: true,
-      useHTML: true
-    },
-    plotOptions: {
-      column: {
-        stacking: 'normal'
-      }
-    },
-    series: [{
-      name: 'Pump 1 On Time',
-      data: pump1OnTime
-    }, {
-      name: 'Pump 2 On Time',
-      data: pump2OnTime
-    }, {
-      name: 'Combined Offline Time',
-      data: combinedOfflineTime
-    }, {
-      name: 'Power Cut Time',
-      data: powerCutTime
-    }] as Highcharts.SeriesColumnOptions[]
-  };
+        text: ''
+      },
+      credits: {
+        enabled: false
+      },
+      xAxis: {
+        categories: categories,
+        crosshair: true
+      },
+      yAxis: {
+        min: 0,
+        title: {
+          text: 'Total Hours'
+        }
+      },
+      tooltip: {
+        headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+        pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                     '<td style="padding:0"><b>{point.y:.2f} hours</b></td></tr>',
+        footerFormat: '</table>',
+        shared: true,
+        useHTML: true
+      },
+      plotOptions: {
+        column: {
+          stacking: 'normal'
+        }
+      },
+      series: [{
+        name: 'Pump 1 On Time',
+        data: pump1OnTime
+      }, {
+        name: 'Pump 2 On Time',
+        data: pump2OnTime
+      }, {
+        name: 'Combined Offline Time',
+        data: combinedOfflineTime
+      }, {
+        name: 'Power Cut Time',
+        data: powerCutTime
+      }] as Highcharts.SeriesColumnOptions[]
+    };
 
-  Highcharts.chart('barChart', options);
-}
-
-
+    Highcharts.chart('barChart', options);
+  }
 
   createLineChart() {
     Highcharts.chart('lineChart', {

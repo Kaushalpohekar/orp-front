@@ -76,6 +76,11 @@ export class DashDataServiceService {
     return this.http.get(`${this.API_URL}/get-Analytics-Data-Bar-Total-interval/${deviceID}?interval=${interval}`);
   }
 
+  analyticsDataByCustomForBarChart(data: any): Observable<any> {
+    // Use the second argument to provide the query parameters
+    return this.http.get(`${this.API_URL}/get-Analytics-Data-Bar-Total-Custom`, data);
+  }
+
   updateCompanyDetails(UserId:string,companyData:any):Observable<any> {
     return this.http.put(`${this.API_URL}/updateCompanyDetails/${UserId}`,companyData);
   }
