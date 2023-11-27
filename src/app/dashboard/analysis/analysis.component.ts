@@ -487,13 +487,13 @@ export class AnalysisComponent implements OnInit{
       },
       yAxis: {
         title: {
-          text: 'Temperature'
+          text: 'ORP'
         },
         min: 450,
         max: 600,
       },
       series: [{
-        name: 'Temperature',
+        name: 'ORP',
         color: {
           linearGradient: {
             x1: 0,
