@@ -43,7 +43,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   subscribeToTopics() {
     this.deviceData = [];
     this.devices.forEach(device => {
-      const topic = `EnergyCoilStatus/SenseLive/${device.device_uid}/1`;
+      const topic = `Sense/Live/coil/${device.device_uid}/1`;
       const subscription = this.mqttService.observe(topic).subscribe((message: IMqttMessage) => {
         const payload = message.payload.toString();
         const deviceData = JSON.parse(payload);
