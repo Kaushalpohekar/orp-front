@@ -16,19 +16,26 @@
     		<mat-form-field appearance="outline" class="from-field">
 		        <mat-label>Device Unique Id</mat-label>
 		        <input matInput [formControl]="DeviceUID" required>
-		        <mat-error *ngIf="DeviceName.invalid">Device Unique ID is Required.</mat-error>
+		        <mat-error *ngIf="DeviceUID.invalid">Device Unique ID is Required.</mat-error>
 		     </mat-form-field>
     	</div>
     	<div class="col-md-6 mb-2">
 	    	<mat-form-field appearance="outline" class="from-field">
-			    <mat-label>Device Longitude</mat-label>
-			    <input matInput [formControl]="DeviceLongitude" required>
-			    <mat-error *ngIf="DeviceName.invalid">Device Longitude is Required.</mat-error>
+			    <mat-label>Device Latitude</mat-label>
+			    <input matInput [formControl]="DeviceLatitude" required>
+			    <mat-error *ngIf="DeviceLatitude.invalid">Device Latitude is Required.</mat-error>
 			</mat-form-field>
 		</div>
-		<div class="col-md-6 mb-2">
+    	<div class="col-md-6 mb-2">
 	    	<mat-form-field appearance="outline" class="from-field">
-			    <mat-label>Device Latitude</mat-label>
+			    <mat-label>Device Longitude</mat-label>
+			    <input matInput [formControl]="DeviceLongitude" required>
+			    <mat-error *ngIf="DeviceLongitude.invalid">Device Longitude is Required.</mat-error>
+			</mat-form-field>
+		</div>
+		<div class="col-12 mb-2">
+	    	<mat-form-field appearance="outline" class="from-field">
+			    <mat-label>Device Location</mat-label>
 			    <input matInput [formControl]="DeviceLatitude" required>
 			    <mat-error *ngIf="DeviceName.invalid">Device Latitude is Required.</mat-error>
 			</mat-form-field>

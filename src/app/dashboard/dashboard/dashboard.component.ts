@@ -15,7 +15,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit, OnDestroy {
-  displayedColumns: string[] = ['DeviceName', 'Pump 1', 'Pump 2', 'Location'];
+  displayedColumns: string[] = ['DeviceName', 'ORP', 'Pump 1', 'Pump 2', 'Location'];
   dataSource = new MatTableDataSource<Device>(ELEMENT_DATA);
   panelOpenState = false;
   CompanyEmail!: string;
@@ -40,22 +40,61 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.unsubscribeFromTopics();
   }
 
-  subscribeToTopics() {
-    this.deviceData = [];
-    this.devices.forEach(device => {
-      const topic = `Sense/Live/coil/${device.device_uid}/1`;
-      const subscription = this.mqttService.observe(topic).subscribe((message: IMqttMessage) => {
-        const payload = message.payload.toString();
-        const deviceData = JSON.parse(payload);
-        const index = this.devices.findIndex(d => d.device_uid === device.device_uid);
-        if (index !== -1) {
-          this.deviceData[index] = deviceData;
-        }
-      });
+  // subscribeToTopics() {
+  //   this.deviceData = [];
+  //   this.devices.forEach(device => {
+  //     const topic = `Sense/Live/coil/${device.device_uid}`;
+  //     const subscription = this.mqttService.observe(topic).subscribe((message: IMqttMessage) => {
+  //       const payload = message.payload.toString();
+  //       const deviceData = JSON.parse(payload);
+  //       const index = this.devices.findIndex(d => d.device_uid === device.device_uid);
+  //       if (index !== -1) {
+  //         this.deviceData[index] = deviceData;
+  //       }
+  //     });
 
-      this.mqttSubscriptions.push(subscription);
+  //     this.mqttSubscriptions.push(subscription);
+  //   });
+  // }
+
+  subscribeToTopics() {
+  this.deviceData = [];
+
+  this.devices.forEach(device => {
+    const coilTopic = `EnergyCoilStatus/SenseLive/${device.device_uid}`;
+    const orpTopic = `EnergyORP/SenseLive/${device.device_uid}`;
+
+    const coilSubscription = this.mqttService.observe(coilTopic).subscribe((coilMessage: IMqttMessage) => {
+      const coilPayload = JSON.parse(coilMessage.payload.toString());
+      console.log(coilPayload);
+      this.processMqttPayload(device, coilPayload);
     });
+
+    const orpSubscription = this.mqttService.observe(orpTopic).subscribe((orpMessage: IMqttMessage) => {
+      const orpPayload = JSON.parse(orpMessage.payload.toString());
+      this.processMqttPayload(device, orpPayload);
+    });
+
+    this.mqttSubscriptions.push(coilSubscription, orpSubscription);
+  });
+}
+
+private processMqttPayload(device: any, payload: any): void {
+  const index = this.devices.findIndex(d => d.device_uid === device.device_uid);
+
+  if (index !== -1) {
+    // If deviceData for this index doesn't exist yet, initialize it as an empty object
+    this.deviceData[index] = this.deviceData[index] || {};
+
+    // Merge the payload into the existing deviceData
+    Object.assign(this.deviceData[index], payload);
+
+    // Optionally, you can also include the device_uid in the merged data
+    this.deviceData[index]['device_uid'] = device.device_uid;
   }
+}
+
+
 
   getIndex(device_uid: string): number {
     return this.devices.findIndex(device => device.device_uid === device_uid);
@@ -115,6 +154,7 @@ export interface Device {
   Location: string;
   device_latitude: number;
   device_longitute: number;
+  ORP: number;
 }
 
 const ELEMENT_DATA: Device[] = [];

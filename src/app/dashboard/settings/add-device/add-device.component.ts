@@ -23,6 +23,7 @@ export class AddDeviceComponent implements OnInit{
   DeviceName = new FormControl('', [Validators.required]);
   DeviceUID = new FormControl('', [Validators.required]);
   DeviceLatitude = new FormControl('', [Validators.required]);
+  DeviceLocation = new FormControl('', [Validators.required]);
 
   @HostListener('window:resize')
   onWindowResize() {
@@ -64,6 +65,7 @@ export class AddDeviceComponent implements OnInit{
         device_longitute: this.DeviceLongitude.value, 
         device_latitude: this.DeviceLatitude.value, 
         device_name: this.DeviceName.value, 
+        location: this.DeviceLocation,
         company_email: Email
       }
 
