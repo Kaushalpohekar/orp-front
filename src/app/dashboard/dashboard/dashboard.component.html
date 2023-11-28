@@ -2,7 +2,7 @@
 	<div class="container-fluid">
 		<div class="row pt-2 mb-1">
 			<div class="col-11">
-				<div class="title">EcoTrade Dashboard</div>
+				<div class="title">Evidenc Action Dashboard</div>
 			</div>
 		</div>
 		<div class="row mb-2">
@@ -36,9 +36,9 @@
                             <ng-container matColumnDef="ORP">
                               <th mat-header-cell *matHeaderCellDef mat-sort-header>ORP</th>
                               <td mat-cell *matCellDef="let element"
-                                  [ngClass]="{'off': deviceData[getIndex(element.orp)] === undefined}">
-                                <ng-container *ngIf="deviceData[getIndex(element.orp)] !== undefined; else showOff">
-                                  {{ deviceData[getIndex(element.orp)] }}
+                                  [ngClass]="{'off': deviceData[getIndex(element.device_uid)]?.orp === undefined}">
+                                <ng-container *ngIf="deviceData[getIndex(element.device_uid)]?.orp !== undefined; else showOff">
+                                  {{ deviceData[getIndex(element.device_uid)]?.orp }}
                                 </ng-container>
                                 <ng-template #showOff>
                                   Off

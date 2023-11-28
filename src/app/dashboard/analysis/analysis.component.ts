@@ -483,14 +483,13 @@ export class AnalysisComponent implements OnInit{
           },
 
       xAxis: {
-        type: 'datetime'
+        type: 'datetime',
+        timezoneOffset: 330
       },
       yAxis: {
         title: {
           text: 'ORP'
         },
-        min: 450,
-        max: 600,
       },
       series: [{
         name: 'ORP',

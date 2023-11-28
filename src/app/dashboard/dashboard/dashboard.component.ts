@@ -61,8 +61,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   this.deviceData = [];
 
   this.devices.forEach(device => {
-    const coilTopic = `EnergyCoilStatus/SenseLive/${device.device_uid}`;
-    const orpTopic = `EnergyORP/SenseLive/${device.device_uid}`;
+    const coilTopic = `Sense/Live/coil/${device.device_uid}`;
+    const orpTopic = `Sense/Live/ORP/${device.device_uid}`;
 
     const coilSubscription = this.mqttService.observe(coilTopic).subscribe((coilMessage: IMqttMessage) => {
       const coilPayload = JSON.parse(coilMessage.payload.toString());
@@ -72,6 +72,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     const orpSubscription = this.mqttService.observe(orpTopic).subscribe((orpMessage: IMqttMessage) => {
       const orpPayload = JSON.parse(orpMessage.payload.toString());
+      console.log(orpPayload);
       this.processMqttPayload(device, orpPayload);
     });
 
@@ -92,6 +93,7 @@ private processMqttPayload(device: any, payload: any): void {
     // Optionally, you can also include the device_uid in the merged data
     this.deviceData[index]['device_uid'] = device.device_uid;
   }
+  console.log(this.deviceData);
 }
 
 
