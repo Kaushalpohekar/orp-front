@@ -119,6 +119,7 @@ export class AnalysisComponent implements OnInit{
                 start_time: sessionStorage.getItem('analytics_start_date'),
                 end_time: sessionStorage.getItem('analytics_end_date'),
               }
+              console.log(analyticsData);
               this.dashDataService.analyticsDataByCustomForPieChart(analyticsData).subscribe(
                 (pieData) => {
                   this.createDonutChart(pieData);
@@ -483,8 +484,7 @@ export class AnalysisComponent implements OnInit{
           },
 
       xAxis: {
-        type: 'datetime',
-        timezoneOffset: 330
+        type: 'datetime'
       },
       yAxis: {
         title: {
