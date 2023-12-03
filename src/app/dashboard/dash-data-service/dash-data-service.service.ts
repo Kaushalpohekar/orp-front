@@ -53,13 +53,14 @@ export class DashDataServiceService {
     return this.http.put(`${this.API_URL}/editUser/${UserId}`,userData);
   }
 
-  analyticsDataByCustomForPieChart(data: any): Observable<any> {
-    return this.http.post(`${this.API_URL}/get-Analytics-Data-OnTime-Total-customs`, data);
+  analyticsDataByCustomForPieChart(deviceId: string, startDate: any, endDate: any): Observable<any> {
+    const params = { start: startDate, end: endDate };
+    return this.http.post(`${this.API_URL}/get-Analytics-Data-OnTime-Total-customs/${deviceId}`, { params });
   }
 
   analyticsDataByIntervalForPieChart(deviceID: string | null, interval: any): Observable<any> {
     // Use the second argument to provide the query parameters
-    return this.http.get(`${this.API_URL}/get-Analytics-Data-OnTime-Total-interval/${deviceID}?interval=${interval}`);
+    return this.http.get(`${this.API_URL}/get-Analytics-Data-OnTime-Total-interval/${deviceID}/intervals?interval=${interval}`);
   }
 
   analyticsDataByCustomForLineChart(data: any): Observable<any> {
@@ -73,12 +74,13 @@ export class DashDataServiceService {
 
   analyticsDataByIntervalForBarChart(deviceID: string | null, interval: any): Observable<any> {
     // Use the second argument to provide the query parameters
-    return this.http.get(`${this.API_URL}/get-Analytics-Data-Bar-Total-interval/${deviceID}?interval=${interval}`);
+    return this.http.get(`${this.API_URL}/get-Analytics-Data-Bar-Total-interval/${deviceID}/intervals?interval=${interval}`);
   }
 
-  analyticsDataByCustomForBarChart(data: any): Observable<any> {
+  analyticsDataByCustomForBarChart(deviceId: string, startDate: any, endDate: any): Observable<any> {
     // Use the second argument to provide the query parameters
-    return this.http.get(`${this.API_URL}/get-Analytics-Data-Bar-Total-Custom`, data);
+    const params = { start: startDate, end: endDate };
+    return this.http.get(`${this.API_URL}/get-Analytics-Data-Bar-Total-Custom/${deviceId}`, { params });
   }
 
   updateCompanyDetails(UserId:string,companyData:any):Observable<any> {

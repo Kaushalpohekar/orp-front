@@ -119,16 +119,21 @@ export class AnalysisComponent implements OnInit{
                 start_time: sessionStorage.getItem('analytics_start_date'),
                 end_time: sessionStorage.getItem('analytics_end_date'),
               }
+              const device_uid = sessionStorage.getItem('analyticsDefaultDevice') || '';
+              const start_time = sessionStorage.getItem('analytics_start_date');
+              const end_time = sessionStorage.getItem('analytics_end_date');
+
               console.log(analyticsData);
-              this.dashDataService.analyticsDataByCustomForPieChart(analyticsData).subscribe(
+              this.dashDataService.analyticsDataByCustomForPieChart(device_uid, start_time, end_time).subscribe(
                 (pieData) => {
-                  this.createDonutChart(pieData);
+                  this.createDonutChart(pieData.dataStatus);
                   this.dashDataService.analyticsDataByCustomForLineChart(analyticsData).subscribe(
                     (lineData) => {
                       this.createLineChart();
-                      this.dashDataService.analyticsDataByCustomForBarChart(analyticsData).subscribe(
+                      this.dashDataService.analyticsDataByCustomForBarChart(device_uid, start_time, end_time).subscribe(
                         (barData) => {
-                          this.createBarChart(barData);  
+                          this.createBarChart(barData.dataByDate);
+                          console.log(barData);  
                         },
                         (error) => {
                           this.snackBar.open('Failed to load Bar data!', 'Dismiss', {
@@ -156,7 +161,7 @@ export class AnalysisComponent implements OnInit{
               const interval = sessionStorage.getItem('analytics_interval');
               this.dashDataService.analyticsDataByIntervalForPieChart(device_uid, interval).subscribe(
                 (pieData) => {
-                  this.createDonutChart(pieData);
+                  this.createDonutChart(pieData.dataStatus);
                   this.dashDataService.analyticsDataByIntervalForLineChart(device_uid, interval).subscribe(
                     (lineData) => {
           
@@ -174,7 +179,8 @@ export class AnalysisComponent implements OnInit{
                       } 
                       this.dashDataService.analyticsDataByIntervalForBarChart(device_uid, interval).subscribe(
                         (barData) => {
-                          this.createBarChart(barData);   
+                          this.createBarChart(barData.dataByDate);
+                          console.log(barData);   
                         },
                         (error) => {
                           this.snackBar.open('Failed to load Bar data!', 'Dismiss', {
@@ -220,7 +226,7 @@ export class AnalysisComponent implements OnInit{
 
     this.dashDataService.analyticsDataByIntervalForPieChart(device_uid, interval).subscribe(
       (pieData) => {
-        this.createDonutChart(pieData);
+        this.createDonutChart(pieData.dataStatus);
         this.dashDataService.analyticsDataByIntervalForLineChart(device_uid, interval).subscribe(
           (lineData) => {
             if (Array.isArray(lineData.data)) {
@@ -237,7 +243,8 @@ export class AnalysisComponent implements OnInit{
             } 
             this.dashDataService.analyticsDataByIntervalForBarChart(device_uid, interval).subscribe(
               (barData) => { 
-                this.createBarChart(barData);   
+                this.createBarChart(barData.dataByDate);
+                console.log(barData);   
               },
               (error) => {
                 this.snackBar.open('Failed to load Bar data!', 'Dismiss', {
@@ -268,7 +275,7 @@ export class AnalysisComponent implements OnInit{
       sessionStorage.setItem('analyticsDefaultDevice',device_uid);
       this.dashDataService.analyticsDataByIntervalForPieChart(device_uid, interval).subscribe(
         (pieData) => {
-          this.createDonutChart(pieData);
+          this.createDonutChart(pieData.dataStatus);
           this.dashDataService.analyticsDataByIntervalForLineChart(device_uid, interval).subscribe(
             (lineData) => {
 
@@ -286,7 +293,8 @@ export class AnalysisComponent implements OnInit{
               } 
               this.dashDataService.analyticsDataByIntervalForBarChart(device_uid, interval).subscribe(
                 (barData) => {
-                  this.createBarChart(barData);   
+                  this.createBarChart(barData.dataByDate);   
+                  console.log(barData);
                 },
                 (error) => {
                   this.snackBar.open('Failed to load Bar data!', 'Dismiss', {
@@ -318,8 +326,8 @@ export class AnalysisComponent implements OnInit{
   applyCustomFilter(){
     sessionStorage.setItem('analytics_interval','custom');
     if(this.start_date.valid && this.end_date.valid && this.device_uid.valid){
-      const formattedStartDate = this.datePipe.transform(this.start_date.value, 'yyyy-MM-dd HH:mm:ss')??'';
-      const formattedEndDate = this.datePipe.transform(this.end_date.value, 'yyyy-MM-dd HH:mm:ss')??'';
+      const formattedStartDate = this.datePipe.transform(this.start_date.value, 'yyyy-MM-dd')??'';
+      const formattedEndDate = this.datePipe.transform(this.end_date.value, 'yyyy-MM-dd')??'';
       sessionStorage.setItem('analytics_start_date',formattedStartDate)
       sessionStorage.setItem('analytics_end_date',formattedEndDate)
 
@@ -328,36 +336,46 @@ export class AnalysisComponent implements OnInit{
         start_time : formattedStartDate,
         end_time : formattedEndDate
       }
-      this.dashDataService.analyticsDataByCustomForPieChart(analyticsData).subscribe(
-        (pieData) => {
-          this.createDonutChart(pieData);
-          this.dashDataService.analyticsDataByCustomForLineChart(analyticsData).subscribe(
-            (lineData) => {
-              this.createLineChart();
-              this.dashDataService.analyticsDataByCustomForBarChart(analyticsData).subscribe(
-                (barData) => {
-                  this.createBarChart(barData);  
-                },
-                (error) => {
-                  this.snackBar.open('Failed to load Bar data!', 'Dismiss', {
-                    duration: 2000
-                  });
-                }
-              );
-            },
-            (error) => {
-              this.snackBar.open('Failed to load Line data!', 'Dismiss', {
-                duration: 2000
-              });
-            }
-          );
-        },
-        (error) => {
-          this.snackBar.open('Failed to load Pie Data!', 'Dismiss', {
-            duration: 2000
-          });
-        }
-      );
+
+      const device_uid = this.device_uid.value;
+      const start_time = formattedStartDate;
+      const end_time = formattedEndDate;
+
+      if(device_uid){
+        this.dashDataService.analyticsDataByCustomForPieChart(device_uid, start_time, end_time).subscribe(
+          (pieData) => {
+            this.createDonutChart(pieData);
+            this.dashDataService.analyticsDataByCustomForLineChart(analyticsData).subscribe(
+              (lineData) => {
+                this.createLineChart();
+                this.dashDataService.analyticsDataByCustomForBarChart(device_uid, start_time, end_time).subscribe(
+                  (barData) => {
+                    this.createBarChart(barData.dataByDate);  
+                    console.log(barData);
+                  },
+                  (error) => {
+                    this.snackBar.open('Failed to load Bar data!', 'Dismiss', {
+                      duration: 2000
+                    });
+                  }
+                );
+              },
+              (error) => {
+                this.snackBar.open('Failed to load Line data!', 'Dismiss', {
+                  duration: 2000
+                });
+              }
+            );
+          },
+          (error) => {
+            this.snackBar.open('Failed to load Pie Data!', 'Dismiss', {
+              duration: 2000
+            });
+          }
+        );
+      }
+
+      
     } else {
       this.snackBar.open('No Data Available!', 'Dismiss', {
         duration: 2000
@@ -366,60 +384,111 @@ export class AnalysisComponent implements OnInit{
   }
 
   createDonutChart(dataStatus: any) {
-    // Define an array of colors for each segment
-    const colors = ['#ff9999', '#66b3ff', '#99ff99', '#ffcc99', '#c2c2f0'];
+    console.log(dataStatus);
+    const donutChartData = dataStatus.map((entry: any) => {
+      const formattedPercentage = parseFloat(entry.percentage.toFixed(2)); // Format to two decimal places
+      let color;
 
-    // Convert dynamic data to an array for the chart with colors
-    const donutChartData = Object.entries(dataStatus).map(([key, value], index: number) => {
-        // Convert hours to minutes and hours
-        const totalMinutes = Math.floor((value as number) * 60);
-        const hours = Math.floor(totalMinutes / 60);
-        const minutes = totalMinutes % 60;
-
-        return {
-            name: key,
-            y: totalMinutes,
-            hours,
-            minutes,
-            color: colors[index % colors.length] // Use modulus to loop through colors
+      if (entry.status === 'pump1ON') {
+        color = {
+          linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
+          stops: [
+            [0, '#78f5e6'], // Start color (light green)
+            [1, '#43ab72']  // End color (darker green)
+          ]
         };
+      } else if (entry.status === 'pump2ON') {
+        color = {
+          linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
+          stops: [
+            [0, '#f0afad'],  // Start color (light red)
+            [1, 'rgba(255, 0, 0, 1)']   // End color (darker red)
+          ]
+        };
+      } else if (entry.status === 'bothOFF'){
+        color = {
+          linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
+          stops: [
+            [0, '#E0E0E0'],  // Start color (default light gray)
+            [1, '#B1B1B1']   // End color (default darker gray)
+          ]
+        };
+      } else {
+        color = {
+          linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
+          stops: [
+            [0, '#E0E0E0'],  // Start color (default light gray)
+            [1, '#B1B1B1']   // End color (default darker gray)
+          ]
+        };
+      }
+      const time = entry.count >= 180 ? (entry.count / 180).toFixed(2) + ' hrs' : (entry.count / 3).toFixed(2) + ' mins';
+
+      return {
+        name: entry.status,
+        y: formattedPercentage,
+        color: color,
+        time : time
+      };
     });
 
+    console.log(donutChartData);
+
     const options: Highcharts.Options = {
-        chart: {
-            type: 'pie'
-        },
-        title: {
-            text: ''
-        },
-        credits: {
-            enabled: false
-        },
-        plotOptions: {
-            pie: {
-                innerSize: '50%'
+      chart: {
+        type: 'pie'
+      },
+      title: {
+        text: '   '
+      },
+      credits: {
+        enabled: false
+      },
+      plotOptions: {
+        pie: {
+          innerSize: '50%',
+          /*dataLabels: {
+            enabled: true,
+            distance: -40, // Adjust the distance of labels from the center of the pie
+            format: '{point.name}: {point.time}', // Include status and hours in the label
+            style: {
+              fontWeight: 'bold'
             }
-        },
-        tooltip: {
-            pointFormat: '{series.name}: <b>{point.hours}h {point.minutes}m</b>'
-        },
-        series: [{
-            type: 'pie',
-            name: 'Status',
-            data: donutChartData
-        }]
+          }*/
+        }
+      },
+      tooltip: {
+        pointFormat: '{series.name}: <b>{point.y}%</b> <br><b>({point.time})<b>'
+      },
+      series: [{
+        type: 'pie',
+        name: 'Time',
+        data: donutChartData
+      }]
     };
 
     Highcharts.chart('donutChart', options);
   }
 
-  createBarChart(barData: any[]) {
-    const categories = barData.map(entry => entry.date);
-    const pump1OnTime = barData.map(entry => entry.pump1OnTime);
-    const pump2OnTime = barData.map(entry => entry.pump2OnTime);
-    const combinedOfflineTime = barData.map(entry => entry.combinedOfflineTime);
-    const powerCutTime = barData.map(entry => entry.powerCutTime);
+  createBarChart(barData: { date: string; dataStatus: Status[] }[]) {
 
+    const categories = barData.map(entry => entry.date);
+    const pump1OnTime = barData.map(entry => {
+      const pump1Status = entry.dataStatus.find(status => status?.status === 'pump1OnTime');
+      return (pump1Status?.count || 0) * 20 / 3600;
+    });
+    const pump2OnTime = barData.map(entry => {
+      const pump2Status = entry.dataStatus.find(status => status?.status === 'pump2ON');
+      return (pump2Status?.count || 0) * 20 / 3600;
+    });
+    const combinedOfflineTime = barData.map(entry => {
+      const offlineStatus = entry.dataStatus.find(status => status?.status === 'bothOFF');
+      return (offlineStatus?.count || 0) * 20 / 3600;
+    });
+    const powerCutTime = barData.map(entry => {
+      const powerCutStatus = entry.dataStatus.find(status => status?.status === 'powerCUT');
+      return (powerCutStatus?.count || 0) * 20 / 3600;
+    });
     const options: Highcharts.Options = {
       chart: {
         type: 'column'
@@ -471,6 +540,7 @@ export class AnalysisComponent implements OnInit{
     Highcharts.chart('barChart', options);
   }
 
+
   createLineChart() {
     Highcharts.chart('lineChart', {
       chart: {
@@ -484,7 +554,8 @@ export class AnalysisComponent implements OnInit{
           },
 
       xAxis: {
-        type: 'datetime'
+        type: 'datetime',
+        timezoneOffset: 330
       },
       yAxis: {
         title: {
@@ -511,4 +582,10 @@ export class AnalysisComponent implements OnInit{
   }
 
 
+}
+
+interface Status {
+  status: string;
+  count: number;
+  percentage: number;
 }
