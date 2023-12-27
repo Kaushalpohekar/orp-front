@@ -166,6 +166,7 @@ export class ReportComponent implements OnInit {
         
             this.dashDataService.reportData(reportData).subscribe(
               (data) => {
+                
                 data.data.forEach((item: Devices) => {
                   const parsedDate = new Date(item.date_time);
                   item.date = this.datePipe.transform(parsedDate, 'yyyy-MM-dd');
