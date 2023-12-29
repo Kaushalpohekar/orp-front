@@ -48,6 +48,9 @@ import { EditUserComponent } from './settings/edit-user/edit-user.component';
 import { ProfileComponent } from './profile/profile.component';
 import { AddDeviceComponent } from './settings/add-device/add-device.component';
 
+import { NgxMatDatetimePickerModule, NgxMatNativeDateModule, NgxMatTimepickerModule } from '@angular-material-components/datetime-picker';
+import { PageLoadingComponent } from './dash-loading/page-loading/page-loading.component';
+
 
 
 @NgModule({
@@ -66,7 +69,8 @@ import { AddDeviceComponent } from './settings/add-device/add-device.component';
     AddDeviceComponent,
     EditDeviceComponent,
     EditUserComponent,
-    ProfileComponent
+    ProfileComponent,
+    PageLoadingComponent
   ],
   imports: [
     CommonModule,
@@ -89,7 +93,13 @@ import { AddDeviceComponent } from './settings/add-device/add-device.component';
     MatNativeDateModule,
     FormsModule,
     MatSnackBarModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    MatChipsModule,
+
+    ReactiveFormsModule,
+    NgxMatDatetimePickerModule,
+    NgxMatNativeDateModule,
+    NgxMatTimepickerModule
   ],
   providers: [
     DatePipe

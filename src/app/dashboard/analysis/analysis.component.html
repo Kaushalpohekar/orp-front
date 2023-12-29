@@ -1,3 +1,7 @@
+<div *ngIf="dashService.pageLoading"><app-page-loading></app-page-loading></div>
+<div *ngIf="!dashService.pageLoading">
+	
+
 <div class="content">
 	<div class="container-fluid">
         <div class="row pt-2 mb-2" style="height: 5vh;">
@@ -81,4 +85,6 @@
 	    	</div>
         </div>
 	</div>
+ </div>
 </div>
+

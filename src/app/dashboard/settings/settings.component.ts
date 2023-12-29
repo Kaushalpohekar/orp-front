@@ -10,6 +10,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { EditUserComponent } from './edit-user/edit-user.component';
 import { EditDeviceComponent } from './edit-device/edit-device.component';
 import Swal from 'sweetalert2';
+import { DashService } from '../dash.service';
 
 @Component({
   selector: 'app-settings',
@@ -34,11 +35,13 @@ export class SettingsComponent implements OnInit{
     private datePipe: DatePipe,
     private dialog:MatDialog,
     public snackBar: MatSnackBar,
+    public dashService :DashService
   ) {}
 
   ngOnInit(): void{
     this.CompanyEmail = this.authService.getCompanyEmail() ?? '';
     this.startInterval();
+    this.dashService.isPageLoading(true);
   }
 
   ngOnDestroy() {
@@ -46,7 +49,7 @@ export class SettingsComponent implements OnInit{
   }
 
   startInterval() {
-    this.intervalSubscription = interval(4000)
+    this.intervalSubscription = interval(5000)
       .pipe(take(Infinity))
       .subscribe(() => {
         this.fetchData();
@@ -70,6 +73,7 @@ export class SettingsComponent implements OnInit{
         (user) => {
           this.dataSource = user.users;
           this.totalUsers = this.dataSource.length;
+          this.dashService.isPageLoading(false);
         },
         (error) => {
           this.snackBar.open('Error while fetching Devices Data!', 'Dismiss', {
@@ -146,6 +150,7 @@ export class SettingsComponent implements OnInit{
             Location:d.Location
           }));
           this.totalDevices = this.dataSource2.length;
+          this.dashService.isPageLoading(false);
         },
         (error) => {
           this.snackBar.open('Error while fetching devices Data!', 'Dismiss', {

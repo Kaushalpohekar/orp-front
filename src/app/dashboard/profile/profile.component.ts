@@ -4,6 +4,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { DashDataServiceService } from '../dash-data-service/dash-data-service.service';
 import { AuthService } from 'src/app/login/auth/auth.service';
 import { DataSource } from '@angular/cdk/collections';
+import { DashService } from '../dash.service';
 
 @Component({
   selector: 'app-profile',
@@ -12,8 +13,7 @@ import { DataSource } from '@angular/cdk/collections';
 })
 export class ProfileComponent implements OnInit{
   constructor(
-    private dashdataService:DashDataServiceService,private authService:AuthService,public snackBar: MatSnackBar
-    ){
+    private dashdataService:DashDataServiceService,private authService:AuthService,public snackBar: MatSnackBar,public dashService :DashService){
 
     }
 
@@ -37,6 +37,7 @@ export class ProfileComponent implements OnInit{
 
   ngOnInit() {
     this.getUserDetail();
+    this.dashService.isPageLoading(true);
   }
 
   toggleCompany(){
@@ -92,6 +93,7 @@ export class ProfileComponent implements OnInit{
     if(this.UserId){
       this.dashdataService.getUserData(this.UserId).subscribe(
         (user) => {
+          this.dashService.isPageLoading(false);
           this.dataSource = user.getUserById;
           this.fname = this.dataSource[0].FirstName;
           this.lname = this.dataSource[0].LastName;

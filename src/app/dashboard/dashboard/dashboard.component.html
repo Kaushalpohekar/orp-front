@@ -1,4 +1,4 @@
-<div class="content">
+ <div class="content">
 	<div class="container-fluid">
 		<div class="row pt-2 mb-1">
 			<div class="col-11">
@@ -22,6 +22,10 @@
 						</div>
 						<mat-divider class="divider"></mat-divider>
                         <div class="table-container" style="overflow: auto;" class="card2">
+
+                            <div *ngIf="dashService.pageLoading"><app-page-loading></app-page-loading></div>
+                            <div *ngIf="!dashService.pageLoading"> 
+
                         <table mat-table [dataSource]="dataSource" matSort class="custom-theme-table mat-table">
                             
                             <ng-container matColumnDef="DeviceName">
@@ -81,9 +85,10 @@
                             <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
                         </table>
                         </div>
+                        </div>
                     </mat-card-content>
                 </mat-card>
 			</div>
 		</div>
 	</div>
-</div>
+ </div>

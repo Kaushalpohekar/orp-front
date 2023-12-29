@@ -8,6 +8,7 @@ import { DashDataServiceService } from '../dash-data-service/dash-data-service.s
 import { Subscription } from 'rxjs';
 import { MqttService, IMqttMessage } from 'ngx-mqtt';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { DashService } from '../dash.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -28,12 +29,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private Highcharts: typeof Highcharts = Highcharts;
 
-  constructor(private mqttService: MqttService, private el: ElementRef, private authService: AuthService, private dashDataService: DashDataServiceService,public snackBar:MatSnackBar) {}
+  constructor(private mqttService: MqttService, private el: ElementRef, private authService: AuthService, private dashDataService: DashDataServiceService,public snackBar:MatSnackBar,public dashService :DashService) {}
 
   ngOnInit() {
     this.CompanyEmail = this.authService.getCompanyEmail() ?? '';
     this.dataSource.sort = this.sort;
     this.deviceList();
+    this.dashService.isPageLoading(true);
   }
 
   ngOnDestroy() {
@@ -113,10 +115,12 @@ private processMqttPayload(device: any, payload: any): void {
     if(this.CompanyEmail){
       this.dashDataService.deviceDetails(this.CompanyEmail).subscribe(
         (device) => {
+          this.dashService.isPageLoading(false);
           this.dataSource = device.devices;
           this.devices = device.devices;
           this.indiamap(this.devices);
           this.subscribeToTopics();
+          
         },
         (error) => {
           this.snackBar.open('Error while fetching devices data!', 'Dismiss', {

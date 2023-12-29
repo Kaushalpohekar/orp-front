@@ -13,6 +13,7 @@ import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
 import 'jspdf-autotable';
 import { Subscription, interval, take } from 'rxjs';
+import { DashService } from '../dash.service';
 
 @Component({
   selector: 'app-report',
@@ -27,12 +28,13 @@ export class ReportComponent implements OnInit {
   data:any
   intervalSubscription: Subscription | undefined;
   
-  constructor(private snackBar: MatSnackBar, private authService: AuthService, private dashDataService: DashDataServiceService, private datePipe: DatePipe) {} 
+  constructor(private snackBar: MatSnackBar, private authService: AuthService, private dashDataService: DashDataServiceService, private datePipe: DatePipe,public dashService :DashService) {} 
 
   
   ngOnInit() {
     this.deviceList();
     this.startInterval();
+    this.dashService.isPageLoading(true);
   }
 
   device_uid = new FormControl('', [Validators.required]);
@@ -149,6 +151,7 @@ export class ReportComponent implements OnInit {
     if (CompanyEmail) {
       this.dashDataService.deviceDetails(CompanyEmail).subscribe(
         (device) => {
+          this.dashService.isPageLoading(false);
           this.dataSource2 = device.devices;
           this.first_device = this.dataSource2[0].device_uid;
           const first_status = this.dataSource2[0].status;
@@ -166,8 +169,8 @@ export class ReportComponent implements OnInit {
         
             this.dashDataService.reportData(reportData).subscribe(
               (data) => {
-                
                 data.data.forEach((item: Devices) => {
+                  this.dashService.isPageLoading(false);
                   const parsedDate = new Date(item.date_time);
                   item.date = this.datePipe.transform(parsedDate, 'yyyy-MM-dd');
                   item.time = this.datePipe.transform(parsedDate, 'HH:mm:ss');

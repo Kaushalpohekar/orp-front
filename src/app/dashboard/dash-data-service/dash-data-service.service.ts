@@ -8,6 +8,10 @@ import { Router } from '@angular/router';
 })
 export class DashDataServiceService {
 
+  public pageLoading = true;
+  public dataLoading = true;
+ 
+
   constructor(private http: HttpClient, private router: Router) {}
 
   // private readonly API_URL = 'http://ec2-3-108-57-100.ap-south-1.compute.amazonaws.com:3000';
@@ -94,4 +98,13 @@ export class DashDataServiceService {
   updateContactDetails(UserId:string,contactData:any):Observable<any> {
     return this.http.put(`${this.API_URL}/updateContactDetails/${UserId}`,contactData);
   }
+
+  public isPageLoading(isLoading: boolean) {
+    this.pageLoading = isLoading;
+  }
+  public isDataLoading() {
+    this.dataLoading = !this.dataLoading;
+  }
+
+
 }

@@ -1,3 +1,4 @@
+
 <div class="content">
     <div class="container-fluid">
         <div class="row pt-2 mb-1 mt-1" style="height: 5vh;">
@@ -7,6 +8,8 @@
         </div>
         <div class="row pt-1">
         	<div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-2">
+            	<div *ngIf="dashService.pageLoading"><app-page-loading></app-page-loading></div>
+                  <div *ngIf="!dashService.pageLoading">
         		<mat-card>
         			<mat-card-content>
 		        		<div class="container-fluid">
@@ -71,12 +74,14 @@
 					    </div>
         			</mat-card-content>
         		</mat-card>
+				</div>
         	</div>
-        	<div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 mb-2">
-        		<mat-card class="mat-card-outline">
-                    <mat-card-content>
-					  <div class="table-container" style="overflow: auto; max-height:68vh;">
-                        <table mat-table [dataSource]="dataSource" matSort class="custom-theme-table mat-table">
+			<div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 mb-2">
+				<mat-card class="mat-card-outline">
+					<mat-card-content>
+						<div class="table-container" style="overflow: auto; max-height:68vh;">
+							<ng-container *ngIf="dataSource.data.length > 0; else noData">
+								<table mat-table [dataSource]="dataSource" matSort class="custom-theme-table mat-table">
                             
                             <ng-container matColumnDef="Device">
                                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
@@ -114,14 +119,19 @@
 							    </td>
                             </ng-container>
 
-                            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-                        </table>
-					  </div>
-					  <mat-paginator [pageSize]="10" showFirstLastButtons></mat-paginator>
-                    </mat-card-content>
-                </mat-card>
+							<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+							<tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+						</table>
+					</ng-container>
+					<ng-template #noData>
+						<div class="no-data-msg">No data found for this time interval.</div>
+					</ng-template>
+				</div>
+				<mat-paginator [pageSize]="10" showFirstLastButtons></mat-paginator>
+			</mat-card-content>
+		</mat-card>
         	</div>
         </div>
     </div>
 </div>
+

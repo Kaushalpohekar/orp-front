@@ -1,4 +1,7 @@
-<div class="content">
+
+<div *ngIf="dashService.pageLoading"><app-page-loading></app-page-loading></div>
+<div *ngIf="!dashService.pageLoading">
+  <div class="content">
     <section class="profile container">
         <div class="row mb-1">
             <div class="col-lg-12 col-md-12 col-sm-12">
@@ -145,4 +148,6 @@
             </div>
         </div>
     </section>
-</div>
+  </div>
+
+ </div>

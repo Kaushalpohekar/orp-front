@@ -8,6 +8,7 @@ import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { DatePipe } from '@angular/common';
 import { Subscription, interval, take } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { DashService } from '../dash.service';
 
 HighchartsMore(Highcharts);
 
@@ -79,6 +80,7 @@ export class AnalysisComponent implements OnInit{
   ngOnInit() {
     this.deviceList();
     this.startInterval();
+    this.dashService.isPageLoading(true);
   }
 
   updateStartDate(event: MatDatepickerInputEvent<any, any>): void {
@@ -96,7 +98,7 @@ export class AnalysisComponent implements OnInit{
     }
   }
 
-  constructor(private authService: AuthService, public dashDataService : DashDataServiceService, private datePipe: DatePipe,private snackBar:MatSnackBar){
+  constructor(private authService: AuthService, public dashDataService : DashDataServiceService, private datePipe: DatePipe,private snackBar:MatSnackBar,public dashService :DashService){
     
   }
 
@@ -105,6 +107,7 @@ export class AnalysisComponent implements OnInit{
     if(CompanyEmail){
       this.dashDataService.deviceDetails(CompanyEmail).subscribe(
         (device) => {
+          this.dashService.isPageLoading(false);
           this.dataSource2 = device.devices;
           this.analyticsFirstDevice = this.dataSource2[0].device_uid;
           const deviceId = sessionStorage.getItem('analyticsDefaultDevice');
@@ -226,6 +229,7 @@ export class AnalysisComponent implements OnInit{
 
     this.dashDataService.analyticsDataByIntervalForPieChart(device_uid, interval).subscribe(
       (pieData) => {
+        this.dashService.isPageLoading(false);
         this.createDonutChart(pieData.dataStatus);
         this.dashDataService.analyticsDataByIntervalForLineChart(device_uid, interval).subscribe(
           (lineData) => {
@@ -474,7 +478,7 @@ export class AnalysisComponent implements OnInit{
 
     const categories = barData.map(entry => entry.date);
     const pump1OnTime = barData.map(entry => {
-      const pump1Status = entry.dataStatus.find(status => status?.status === 'pump1OnTime');
+      const pump1Status = entry.dataStatus.find(status => status?.status === 'pump1ON');
       return (pump1Status?.count || 0) * 20 / 3600;
     });
     const pump2OnTime = barData.map(entry => {

@@ -41,3 +41,6 @@
 	background-clip: text;
     font-weight: 550;
 }
+mat-form-field{
+    width:100%;
+}
