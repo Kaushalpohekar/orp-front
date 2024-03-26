@@ -42,61 +42,82 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.unsubscribeFromTopics();
   }
 
-  // subscribeToTopics() {
-  //   this.deviceData = [];
-  //   this.devices.forEach(device => {
-  //     const topic = `Sense/Live/coil/${device.device_uid}`;
-  //     const subscription = this.mqttService.observe(topic).subscribe((message: IMqttMessage) => {
-  //       const payload = message.payload.toString();
-  //       const deviceData = JSON.parse(payload);
-  //       const index = this.devices.findIndex(d => d.device_uid === device.device_uid);
-  //       if (index !== -1) {
-  //         this.deviceData[index] = deviceData;
-  //       }
-  //     });
-
-  //     this.mqttSubscriptions.push(subscription);
-  //   });
-  // }
 
   subscribeToTopics() {
-  this.deviceData = [];
+    this.devices.forEach(device => {
+      const coilTopic = `Sense/Live/coil/${device.device_uid}`;
+      const orpTopic = `Sense/Live/ORP/${device.device_uid}`;
 
-  this.devices.forEach(device => {
-    const coilTopic = `Sense/Live/coil/${device.device_uid}`;
-    const orpTopic = `Sense/Live/ORP/${device.device_uid}`;
+      const coilSubscription = this.mqttService.observe(coilTopic).subscribe((coilMessage: IMqttMessage) => {
+        const coilPayload = JSON.parse(coilMessage.payload.toString());
+        this.processMqttPayload(device, coilPayload);
+      });
 
-    const coilSubscription = this.mqttService.observe(coilTopic).subscribe((coilMessage: IMqttMessage) => {
-      const coilPayload = JSON.parse(coilMessage.payload.toString());
-      console.log(coilPayload);
-      this.processMqttPayload(device, coilPayload);
+      const orpSubscription = this.mqttService.observe(orpTopic).subscribe((orpMessage: IMqttMessage) => {
+        const orpPayload = JSON.parse(orpMessage.payload.toString());
+        this.processMqttPayload(device, orpPayload);
+      });
+
+      this.mqttSubscriptions.push(coilSubscription, orpSubscription);
     });
-
-    const orpSubscription = this.mqttService.observe(orpTopic).subscribe((orpMessage: IMqttMessage) => {
-      const orpPayload = JSON.parse(orpMessage.payload.toString());
-      console.log(orpPayload);
-      this.processMqttPayload(device, orpPayload);
-    });
-
-    this.mqttSubscriptions.push(coilSubscription, orpSubscription);
-  });
-}
-
-private processMqttPayload(device: any, payload: any): void {
-  const index = this.devices.findIndex(d => d.device_uid === device.device_uid);
-
-  if (index !== -1) {
-    // If deviceData for this index doesn't exist yet, initialize it as an empty object
-    this.deviceData[index] = this.deviceData[index] || {};
-
-    // Merge the payload into the existing deviceData
-    Object.assign(this.deviceData[index], payload);
-
-    // Optionally, you can also include the device_uid in the merged data
-    this.deviceData[index]['device_uid'] = device.device_uid;
   }
-  console.log(this.deviceData);
-}
+
+  getDeviceData(){
+    if(this.CompanyEmail){
+      this.dashDataService.getDeviceData(this.CompanyEmail).subscribe(
+        (deviceData) =>{
+          this.deviceData = this.transformData(deviceData);
+          this.subscribeToTopics();
+        },
+        (error) =>{
+          console.log("Error");
+        }
+      );
+    }
+  }
+
+  transformData(data: any): any[] {
+    const transformedData: any[] = [];
+
+    data.latestEntry.forEach((deviceEntry: any) => {
+      const deviceUID = Object.keys(deviceEntry)[0];
+      const entryData = deviceEntry[deviceUID]?.entry?.[0];
+
+      if (entryData) {
+        const timestampUTC = new Date(entryData.date_time);
+        const timestampIST = new Date(timestampUTC.getTime() + (5.5 * 60 * 60 * 1000)); // Add 5.30 hours
+
+        const transformedEntry: any = {
+          device_uid: deviceUID,
+          orp: entryData.orp ? parseInt(entryData.orp) : undefined,
+          pump1: entryData.pump1 ? parseInt(entryData.pump1) : undefined,
+          pump2: entryData.pump2 ? parseInt(entryData.pump2) : undefined,
+          Timestamp: timestampIST.toISOString() // Convert back to ISO string
+        };
+
+        transformedData.push(transformedEntry);
+      } else {
+        console.error(`Entry data not found for device UID: ${deviceUID}`);
+      }
+    });
+
+    return transformedData;
+  }
+
+  private processMqttPayload(device: any, payload: any): void {
+    const index = this.devices.findIndex(d => d.device_uid === device.device_uid);
+
+    if (index !== -1) {
+      // If deviceData for this index doesn't exist yet, initialize it as an empty object
+      this.deviceData[index] = this.deviceData[index] || {};
+
+      // Merge the payload into the existing deviceData
+      Object.assign(this.deviceData[index], payload);
+
+      // Optionally, you can also include the device_uid in the merged data
+      this.deviceData[index]['device_uid'] = device.device_uid;
+    }
+  }
 
 
 
@@ -119,7 +140,7 @@ private processMqttPayload(device: any, payload: any): void {
           this.dataSource = device.devices;
           this.devices = device.devices;
           this.indiamap(this.devices);
-          this.subscribeToTopics();
+          this.getDeviceData();
           
         },
         (error) => {

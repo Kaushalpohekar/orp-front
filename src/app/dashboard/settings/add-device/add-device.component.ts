@@ -65,7 +65,7 @@ export class AddDeviceComponent implements OnInit{
         device_longitute: this.DeviceLongitude.value, 
         device_latitude: this.DeviceLatitude.value, 
         device_name: this.DeviceName.value, 
-        location: this.DeviceLocation,
+        location: this.DeviceLocation.value,
         company_email: Email
       }
 

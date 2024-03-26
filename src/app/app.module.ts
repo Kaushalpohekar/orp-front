@@ -5,6 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MqttModule, IMqttServiceOptions } from 'ngx-mqtt';
+import { HashLocationStrategy,LocationStrategy } from '@angular/common';
 
 
 const MQTT_SERVICE_OPTIONS: IMqttServiceOptions = {
@@ -26,7 +27,7 @@ const MQTT_SERVICE_OPTIONS: IMqttServiceOptions = {
     HttpClientModule,
     MqttModule.forRoot(MQTT_SERVICE_OPTIONS)
   ],
-  providers: [],
+  providers: [{provide : LocationStrategy , useClass : HashLocationStrategy}],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

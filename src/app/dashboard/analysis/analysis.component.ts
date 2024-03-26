@@ -126,17 +126,27 @@ export class AnalysisComponent implements OnInit{
               const start_time = sessionStorage.getItem('analytics_start_date');
               const end_time = sessionStorage.getItem('analytics_end_date');
 
-              console.log(analyticsData);
               this.dashDataService.analyticsDataByCustomForPieChart(device_uid, start_time, end_time).subscribe(
                 (pieData) => {
                   this.createDonutChart(pieData.dataStatus);
                   this.dashDataService.analyticsDataByCustomForLineChart(analyticsData).subscribe(
                     (lineData) => {
                       this.createLineChart();
+                      if (Array.isArray(lineData.data)) {
+                        this.orpData = lineData.data.map((entry: any) => {
+                          const timestamp = new Date(entry.date_time).getTime();
+                          const orp = parseInt(entry.orp);
+                          return [timestamp, orp];
+                        });
+                        this.createLineChart();
+                      } else {
+                        this.snackBar.open('Line Data Array Not Found!', 'Dismiss', {
+                          duration: 2000
+                          });
+                      } 
                       this.dashDataService.analyticsDataByCustomForBarChart(device_uid, start_time, end_time).subscribe(
                         (barData) => {
                           this.createBarChart(barData.dataByDate);
-                          console.log(barData);  
                         },
                         (error) => {
                           this.snackBar.open('Failed to load Bar data!', 'Dismiss', {
@@ -183,7 +193,6 @@ export class AnalysisComponent implements OnInit{
                       this.dashDataService.analyticsDataByIntervalForBarChart(device_uid, interval).subscribe(
                         (barData) => {
                           this.createBarChart(barData.dataByDate);
-                          console.log(barData);   
                         },
                         (error) => {
                           this.snackBar.open('Failed to load Bar data!', 'Dismiss', {
@@ -247,8 +256,7 @@ export class AnalysisComponent implements OnInit{
             } 
             this.dashDataService.analyticsDataByIntervalForBarChart(device_uid, interval).subscribe(
               (barData) => { 
-                this.createBarChart(barData.dataByDate);
-                console.log(barData);   
+                this.createBarChart(barData.dataByDate);   
               },
               (error) => {
                 this.snackBar.open('Failed to load Bar data!', 'Dismiss', {
@@ -298,7 +306,6 @@ export class AnalysisComponent implements OnInit{
               this.dashDataService.analyticsDataByIntervalForBarChart(device_uid, interval).subscribe(
                 (barData) => {
                   this.createBarChart(barData.dataByDate);   
-                  console.log(barData);
                 },
                 (error) => {
                   this.snackBar.open('Failed to load Bar data!', 'Dismiss', {
@@ -348,14 +355,13 @@ export class AnalysisComponent implements OnInit{
       if(device_uid){
         this.dashDataService.analyticsDataByCustomForPieChart(device_uid, start_time, end_time).subscribe(
           (pieData) => {
-            this.createDonutChart(pieData);
+            this.createDonutChart(pieData.dataStatus);
             this.dashDataService.analyticsDataByCustomForLineChart(analyticsData).subscribe(
               (lineData) => {
                 this.createLineChart();
                 this.dashDataService.analyticsDataByCustomForBarChart(device_uid, start_time, end_time).subscribe(
                   (barData) => {
                     this.createBarChart(barData.dataByDate);  
-                    console.log(barData);
                   },
                   (error) => {
                     this.snackBar.open('Failed to load Bar data!', 'Dismiss', {
@@ -388,7 +394,6 @@ export class AnalysisComponent implements OnInit{
   }
 
   createDonutChart(dataStatus: any) {
-    console.log(dataStatus);
     const donutChartData = dataStatus.map((entry: any) => {
       const formattedPercentage = parseFloat(entry.percentage.toFixed(2)); // Format to two decimal places
       let color;
@@ -436,8 +441,6 @@ export class AnalysisComponent implements OnInit{
       };
     });
 
-    console.log(donutChartData);
-
     const options: Highcharts.Options = {
       chart: {
         type: 'pie'
@@ -476,7 +479,14 @@ export class AnalysisComponent implements OnInit{
 
   createBarChart(barData: { date: string; dataStatus: Status[] }[]) {
 
-    const categories = barData.map(entry => entry.date);
+    const addOffset = (dateString: any) => {
+        const date = new Date(dateString);
+        date.setHours(date.getHours() + 5); // Add 5 hours
+        date.setMinutes(date.getMinutes() + 30); // Add 30 minutes
+        return date.toISOString(); // Return as ISO string
+    };
+
+    const categories = barData.map(entry => addOffset(entry.date));
     const pump1OnTime = barData.map(entry => {
       const pump1Status = entry.dataStatus.find(status => status?.status === 'pump1ON');
       return (pump1Status?.count || 0) * 20 / 3600;

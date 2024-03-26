@@ -14,8 +14,8 @@ export class DashDataServiceService {
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  // private readonly API_URL = 'http://ec2-3-108-57-100.ap-south-1.compute.amazonaws.com:3000';
-  private readonly API_URL = 'http://localhost:4000';
+  private readonly API_URL = 'http://43.204.234.201/:4000';
+  //private readonly API_URL = 'http://localhost:4000';
 
   userDetails(CompanyEmail: string):Observable<any> {
     return this.http.get(`${this.API_URL}/getUsersForUsers/${CompanyEmail}`);
@@ -59,7 +59,7 @@ export class DashDataServiceService {
 
   analyticsDataByCustomForPieChart(deviceId: string, startDate: any, endDate: any): Observable<any> {
     const params = { start: startDate, end: endDate };
-    return this.http.post(`${this.API_URL}/get-Analytics-Data-OnTime-Total-customs/${deviceId}`, { params });
+    return this.http.post(`${this.API_URL}/get-Analytics-Data-OnTime-Total-customs/${deviceId}`, params);
   }
 
   analyticsDataByIntervalForPieChart(deviceID: string | null, interval: any): Observable<any> {
@@ -97,6 +97,10 @@ export class DashDataServiceService {
 
   updateContactDetails(UserId:string,contactData:any):Observable<any> {
     return this.http.put(`${this.API_URL}/updateContactDetails/${UserId}`,contactData);
+  }
+
+  getDeviceData(CompanyEmail: string): Observable <any> {
+    return this.http.get(`${this.API_URL}/getLatestEntry/${CompanyEmail}`);
   }
 
   public isPageLoading(isLoading: boolean) {
