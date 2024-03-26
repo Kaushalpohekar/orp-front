@@ -14,7 +14,7 @@ export class DashDataServiceService {
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  private readonly API_URL = 'http://43.204.234.201/:4000';
+  private readonly API_URL = 'http://43.204.234.201:4000';
   //private readonly API_URL = 'http://localhost:4000';
 
   userDetails(CompanyEmail: string):Observable<any> {
